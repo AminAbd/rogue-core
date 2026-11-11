@@ -140,6 +140,44 @@ details.rules summary { cursor: pointer; font: 400 1.05rem var(--display) }
 .rules ol { margin: 14px 0 0; padding-left: 1.2em; display: grid; gap: 8px; color: var(--muted) }
 .rules b { color: var(--fg) }
 @media (prefers-reduced-motion: reduce) { .turn.mine, .cc.can, .cc.pending, .cc.fresh, body.shake { animation: none } #fx { display: none } }
+
+/* table scene, settings sheet */
+.stage { border-radius: 18px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 12px 34px rgba(0,0,0,.45); background: #120C26 }
+.scene { display: block; width: 100%; height: auto; font-family: var(--body) }
+.tcard.can { cursor: pointer; animation: bob 1.6s ease-in-out infinite; transform-box: fill-box; filter: drop-shadow(0 0 3px #FF5FA2) }
+.tcard.can:hover, .tcard.can:focus { filter: drop-shadow(0 0 5px #FFD166); outline: none }
+.tcard.pending { animation: pulse .6s infinite }
+.tcard.fresh { animation: flipt .6s ease; transform-box: fill-box; transform-origin: center }
+@keyframes flipt { from { transform: scale(1.6) rotate(-12deg) } to { transform: none } }
+.scis { fill: #FFD166; stroke: #120C26; stroke-width: 3px; paint-order: stroke }
+.dance { animation: sway .95s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 100% }
+@keyframes sway { from { transform: translateX(-3px) rotate(-5deg) } to { transform: translateX(3px) rotate(5deg) } }
+.spin { animation: spin 3.8s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100% }
+@keyframes spin { 0%, 70% { transform: scaleX(1) } 80% { transform: scaleX(-1) } 90%, 100% { transform: scaleX(1) } }
+.snow { animation: fall 6s linear infinite }
+@keyframes fall { from { transform: translateY(-10px) } to { transform: translateY(150px) } }
+.wave { animation: wv 3s ease-in-out infinite alternate }
+@keyframes wv { from { transform: translateX(-8px) } to { transform: translateX(8px) } }
+.tw { animation: tw 1.6s ease-in-out infinite alternate }
+@keyframes tw { from { opacity: .35 } to { opacity: 1 } }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: rgba(0,0,0,.25) }
+.seg button { border: 0; background: none; padding: 6px 14px; border-radius: 999px; font-size: .82rem; color: var(--muted) }
+.seg button[aria-pressed="true"] { background: var(--pink); color: #3A0620 }
+button.icon { padding: 6px 10px; border-radius: 999px; font-size: 1rem; line-height: 1 }
+#settings { position: fixed; inset: 0; z-index: 30; background: rgba(8,4,20,.6); display: flex; align-items: flex-end; justify-content: center }
+#settings[hidden] { display: none }
+.sheet { width: min(560px, 100%); max-height: 88vh; overflow-y: auto; background: #1C1240; border: 1px solid var(--line); border-radius: 22px 22px 0 0; display: grid; gap: 16px;
+  padding-block: 18px max(24px, env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+.sgroup { display: grid; gap: 8px }
+.opts { display: flex; flex-wrap: wrap; gap: 6px }
+.opt { padding: 8px 12px; border-radius: 999px; font-size: .85rem }
+.opt[aria-pressed="true"] { border-color: var(--pink); color: var(--pink); background: rgba(255,95,162,.12) }
+.sw { width: 34px; height: 34px; border-radius: 50%; padding: 0; border: 2px solid rgba(255,255,255,.25) }
+.sw.on { border: 3px solid #fff; box-shadow: 0 0 0 2px var(--pink) }
+.me-prev { display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
+.me-prev svg { width: 100%; height: auto; border-radius: 14px; display: block }
+input[type=range] { padding: 0; accent-color: var(--pink) }
+@media (prefers-reduced-motion: reduce) { .dance, .spin, .snow, .wave, .tw, .tcard.can, .tcard.fresh { animation: none } }
 </style>
 </head>
 <body>
@@ -155,17 +193,31 @@ details.rules summary { cursor: pointer; font: 400 1.05rem var(--display) }
   <linearGradient id="gSys" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FD3FF"/><stop offset=".5" stop-color="#3A62D9"/><stop offset="1" stop-color="#1B1460"/></linearGradient>
   <linearGradient id="gRogue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF8AA8"/><stop offset=".45" stop-color="#9B1240"/><stop offset="1" stop-color="#22051A"/></linearGradient>
   <pattern id="pDots" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.1" fill="#FFFFFF" opacity=".14"/></pattern>
+
+  <linearGradient id="gSkyMtl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B1640"/><stop offset="1" stop-color="#3A3A8A"/></linearGradient>
+  <linearGradient id="gFloorMtl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6B4A3A"/><stop offset="1" stop-color="#3A2620"/></linearGradient>
+  <linearGradient id="gSkyDes" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5A2E8A"/><stop offset=".55" stop-color="#FF6F91"/><stop offset="1" stop-color="#FFB36B"/></linearGradient>
+  <linearGradient id="gFloorDes" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E7B97A"/><stop offset="1" stop-color="#B9844A"/></linearGradient>
+  <linearGradient id="gSkyBea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5EC8FF"/><stop offset="1" stop-color="#FFE3B3"/></linearGradient>
+  <linearGradient id="gFloorBea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7DDA2"/><stop offset="1" stop-color="#D9B272"/></linearGradient>
+  <linearGradient id="gSkyDr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5B2E8F"/><stop offset=".6" stop-color="#FF7A6B"/><stop offset="1" stop-color="#FFC27A"/></linearGradient>
+  <linearGradient id="gFloorDr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D2774A"/><stop offset="1" stop-color="#8E4426"/></linearGradient>
+  <radialGradient id="gTblDr" cx=".45" cy=".35"><stop offset="0" stop-color="#3FD0C0"/><stop offset="1" stop-color="#1B8A80"/></radialGradient>
+  <radialGradient id="gTblMtl" cx=".45" cy=".35"><stop offset="0" stop-color="#A06A44"/><stop offset="1" stop-color="#6A4228"/></radialGradient>
+  <radialGradient id="gTblDes" cx=".45" cy=".35"><stop offset="0" stop-color="#F2C860"/><stop offset="1" stop-color="#A9781E"/></radialGradient>
+  <radialGradient id="gTblBea" cx=".45" cy=".35"><stop offset="0" stop-color="#F3DCA4"/><stop offset="1" stop-color="#C69A58"/></radialGradient>
 </defs></svg>
 <div class="wrap">
   <header class="row" style="justify-content:space-between;align-items:flex-end">
     <div class="logo"><h1>ROGUE <span>CORE</span></h1><small>ローグ・コア</small></div>
-    <span class="label" id="conn">Offline</span>
+    <span class="row" style="gap:6px"><span class="label" id="conn">Offline</span><button class="icon" id="mute" aria-label="Music on or off">🎵</button><button class="icon" id="gear" aria-label="Settings">⚙</button></span>
   </header>
   <main id="app" style="display:grid;gap:16px"></main>
   <details class="rules" id="rules"><summary>How to play</summary><div id="rules-body"></div></details>
   <p class="muted" style="font-size:.8rem;text-align:center">Phones connect directly to each other. It works best when everyone is on the same Wi-Fi.</p>
 </div>
 <div id="fx" aria-hidden="true"></div>
+<div id="settings" hidden></div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
@@ -205,10 +257,10 @@ const BOT_NAMES = ["Ada", "Turing", "Hopper", "Lovelace", "Shannon", "Babbage", 
 let botTimer = null;
 function addBot() {
   if ([...players.values()].filter(online).length >= 8) return;
-  const used = new Set([...players.values()].map(p => p.name));
-  const name = "Bot " + (BOT_NAMES.find(n => !used.has("Bot " + n)) || randId(3, CODE_ABC));
+  const used = new Set([...players.values()].map(p => p.name)); let k = 1; while (used.has("Computer " + k)) k++;
+  const name = "Computer " + k;
   const pid = "bot" + randId(7, "abcdefghijkmnpqrstuvwxyz23456789");
-  players.set(pid, { pid, name, bot: true, conn: null, claim: null, lastN: 0 });
+  players.set(pid, { pid, name, bot: true, look: randomLook(), conn: null, claim: null, lastN: 0 });
   broadcast();
 }
 function removeBot(pid) { const p = players.get(pid); if (p && p.bot) { players.delete(pid); broadcast(); } }
@@ -252,14 +304,14 @@ function secretFor(pid) {
 }
 function broadcast() {
   const st = publicState();
-  const lobby = [...players.values()].map(p => ({ pid: p.pid, name: p.name, host: p.pid === me.pid, bot: !!p.bot, on: online(p) }));
+  const lobby = [...players.values()].map(p => ({ pid: p.pid, name: p.name, host: p.pid === me.pid, bot: !!p.bot, look: p.look, on: online(p) }));
   const claims = {}; for (const p of players.values()) if (p.claim) claims[p.pid] = p.claim;
   for (const p of players.values()) {
     const msg = { type: "state", st, lobby, claims, secret: secretFor(p.pid) };   // each phone gets only its own secret
     if (p.pid === me.pid) { view = msg; }
     else if (p.conn && p.conn.open) { try { p.conn.send(msg); } catch {} }
   }
-  LS.set("rc-host-" + code, { H, players: [...players.values()].map(p => ({ pid: p.pid, name: p.name, bot: !!p.bot, claim: p.claim, lastN: p.lastN })) });
+  LS.set("rc-host-" + code, { H, players: [...players.values()].map(p => ({ pid: p.pid, name: p.name, bot: !!p.bot, look: p.look, claim: p.claim, lastN: p.lastN })) });
   render();
   scheduleBot();
 }
@@ -304,10 +356,11 @@ function hostHandle(pid, d, fromConn) {
   if (d.type === "hello") {
     const name = String(d.name || "Player").slice(0, 14);
     const p = players.get(pid) || { pid, name, conn: null, claim: null, lastN: 0 };
-    p.name = name; if (fromConn) p.conn = fromConn;
+    p.name = name; p.look = sanitizeLook(d.look) || lookFromSeed(pid); if (fromConn) p.conn = fromConn;
     players.set(pid, p); broadcast(); return;
   }
   const p = players.get(pid); if (!p) return;
+  if (d.type === "look") { p.look = sanitizeLook(d.look) || p.look; broadcast(); return; }
   if (d.type === "act" && typeof d.n === "number" && d.n > (p.lastN || 0)) { p.lastN = d.n; cut(pid, String(d.t), d.i | 0); }
   else if (d.type === "claim" && H && H.ph === "play") {
     const k = d.k | 0; p.claim = { rd: H.round + 1, k: Math.max(0, Math.min(4, k)), v: !!d.v }; broadcast();
@@ -319,7 +372,7 @@ function hostOpen(c, fresh) {
   players.clear();
   if (saved) { H = saved.H; for (const p of saved.players || []) players.set(p.pid, { ...p, conn: null }); }
   else H = null;
-  players.set(me.pid, Object.assign(players.get(me.pid) || { claim: null, lastN: 0 }, { pid: me.pid, name: me.name, conn: null }));
+  players.set(me.pid, Object.assign(players.get(me.pid) || { claim: null, lastN: 0 }, { pid: me.pid, name: me.name, look: me.look, conn: null }));
   setConn("Opening…"); render();
   peer = new Peer(PREFIX + code);
   peer.on("open", () => { setConn("Live · " + code); broadcast(); });
@@ -364,7 +417,7 @@ function connectToHost() {
   if (peer.disconnected) { try { peer.reconnect(); } catch {} }
   const cn = peer.connect(PREFIX + code, { reliable: true });
   conn = cn;
-  cn.on("open", () => { hint = ""; setConn("Live · " + code); cn.send({ type: "hello", pid: me.pid, name: me.name }); });
+  cn.on("open", () => { hint = ""; setConn("Live · " + code); cn.send({ type: "hello", pid: me.pid, name: me.name, look: me.look }); });
   cn.on("data", d => { if (d && d.type === "state") { view = d; render(); } });
   cn.on("close", () => { if (conn === cn && code) { setConn("Reconnecting…"); scheduleRetry(); } });
   cn.on("error", () => { if (conn === cn && code) scheduleRetry(); });
@@ -378,16 +431,39 @@ function leaveGame() {
 }
 function backToLobby() { H = null; for (const p of players.values()) p.claim = null; broadcast(); }
 
-// ---------- art: original anime-style characters and cards, drawn as SVG ----------
+// ---------- art: original anime-style characters, cards and table scenes, drawn as SVG ----------
 const hash = s => { let h = 2166136261; for (const c of String(s)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
 function mix(a, b, t) {
   const p = x => [1, 3, 5].map(i => parseInt(x.slice(i, i + 2), 16));
   const A = p(a), B = p(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join("");
 }
-const HAIR = ["#FF6FA8", "#5AA9FF", "#FFD166", "#B28DFF", "#5CF2B0", "#2E2440", "#FF8A5C", "#E9E4FF"];
-const EYES = ["#3FD0FF", "#B06BFF", "#FF7A59", "#46D18A", "#FFC23D", "#FF5FA2"];
+const HAIR = ["#2A1E1A", "#5A3A22", "#9A6A35", "#F0C987", "#FF6FA8", "#5AA9FF", "#B28DFF", "#5CF2B0", "#ECEAFF", "#FF7A4D"];
+const EYES = ["#3FD0FF", "#B06BFF", "#C2733B", "#46D18A", "#FFC23D", "#FF5FA2"];
 const SKIN = ["#FFE6D5", "#F8D0B0", "#E2AA80", "#B97C55", "#8A5638"];
-const SHIRT = ["#3A3F8F", "#7A2E6E", "#1F6F78", "#5B3FA0", "#2F4A7A", "#8A3B3B"];
+const OUTFIT = ["#3A3F8F", "#C2185B", "#1F8A8A", "#6A3FB5", "#E0533D", "#F2A900", "#2F2F3A", "#3E8E41"];
+const STYLES = ["spiky", "bob", "long", "ponytail", "twintails", "wavy"];
+const STYLE_NAMES = ["Spiky", "Bob", "Long", "Ponytail", "Twin tails", "Wavy"];
+const HATS = ["none", "cap", "beret", "straw", "flower", "headphones"];
+const HAT_NAMES = ["No hat", "Cap", "Beret", "Straw hat", "Flower", "Headphones"];
+// A look is a small set of numbers, so it can travel between phones and be checked by the host.
+function sanitizeLook(l) {
+  if (!l || typeof l !== "object") return null;
+  const n = (v, m) => Math.abs((v | 0)) % m;
+  return { s: n(l.s, 6), h: n(l.h, 10), k: n(l.k, 5), e: n(l.e, 6), t: n(l.t, 6), g: n(l.g, 2), o: n(l.o, 8) };
+}
+function lookFromSeed(seed) {
+  const h = hash(seed);
+  return { s: h % 6, h: (h >>> 4) % 10, k: (h >>> 8) % 5, e: (h >>> 12) % 6, t: (h >>> 16) % 6 < 3 ? 0 : (h >>> 16) % 6, g: (h >>> 20) % 5 === 0 ? 1 : 0, o: (h >>> 23) % 8 };
+}
+function randomLook() { return lookFromSeed(randId(12, "abcdefghijklmnopqrstuvwxyz")); }
+const lookOpts = l => ({ hair: HAIR[l.h], eye: EYES[l.e], skin: SKIN[l.k], shirt: OUTFIT[l.o], style: STYLES[l.s], hat: HATS[l.t], glasses: !!l.g, mood: "smile" });
+me.look = sanitizeLook(LS.get("rc-look")) || lookFromSeed(me.pid);
+function lookOf(pid) {
+  if (pid === me.pid) return me.look;
+  const e = view && (view.lobby || []).find(p => p.pid === pid);
+  return (e && sanitizeLook(e.look)) || lookFromSeed(pid);
+}
+
 function eye(cx, iris, left, android) {
   const s = left ? 1 : -1, cy = 116;
   return `<ellipse cx="${cx}" cy="${cy}" rx="11.5" ry="13.5" fill="#fff"/>
@@ -399,14 +475,49 @@ function eye(cx, iris, left, android) {
     <path d="M${cx + 12 * s} ${cy - 7} l${4 * s} -3" stroke="#1A1030" stroke-width="2.4" stroke-linecap="round"/>
     <path d="M${cx - 9 * s} ${cy - 23} Q${cx} ${cy - 27} ${cx + 9 * s} ${cy - 22}" stroke="${android ? "#E9E4FF" : "#2A1A20"}" stroke-width="2" fill="none" stroke-linecap="round"/>`;
 }
-// One character drawing, framed as a portrait (viewBox 0 0 200 240) or cropped to a round avatar.
+const WAVY = "M54 92 Q38 140 52 168 Q42 192 60 214 Q74 204 82 216 Q100 204 118 216 Q126 204 140 214 Q158 192 148 168 Q162 140 146 92Z";
+function hairBack(o, c) {
+  switch (o.style) {
+    case "long": return `<path d="M56 96 Q48 172 66 206 L134 206 Q152 172 144 96Z" fill="${c}"/>`;
+    case "wavy": return `<path d="${WAVY}" fill="${c}"/>`;
+    case "bob": return `<path d="M56 96 Q52 152 70 160 L130 160 Q148 152 144 96Z" fill="${c}"/>`;
+    case "ponytail": return `<path d="M126 66 Q180 72 172 142 Q166 180 148 202 Q160 150 144 108Z" fill="${c}"/>`;
+    case "twintails": return `<path d="M70 70 Q16 98 30 196 Q40 214 54 202 Q44 160 64 112Z" fill="${c}"/><path d="M130 70 Q184 98 170 196 Q160 214 146 202 Q156 160 136 112Z" fill="${c}"/>`;
+    default: return `<path d="M60 92 Q58 130 68 140 L132 140 Q142 130 140 92Z" fill="${c}"/>`;
+  }
+}
+function hairFront(o, hr) {
+  let bangs;
+  switch (o.style) {
+    case "bob": bangs = `<path d="M60 106 Q52 54 100 48 Q148 54 140 106 Q126 84 100 88 Q74 84 60 106Z" fill="${hr}"/>`; break;
+    case "long": case "wavy": bangs = `<path d="M60 108 Q50 50 104 46 Q150 52 140 108 Q136 84 120 72 Q112 92 86 98 Q72 100 60 108Z" fill="${hr}"/>`; break;
+    case "ponytail": bangs = `<path d="M60 104 Q54 52 100 48 Q146 52 140 104 L132 90 L124 100 L112 82 L100 96 L88 82 L76 100 L68 90Z" fill="${hr}"/>`; break;
+    case "twintails": bangs = `<path d="M60 104 Q54 52 100 48 Q146 52 140 104 Q128 88 104 84 L100 66 L96 84 Q72 88 60 104Z" fill="${hr}"/>`; break;
+    default: bangs = `<path d="M60 106 Q52 54 100 48 Q148 54 140 106 L133 88 L127 106 L119 80 L110 101 L101 75 L92 101 L83 80 L75 106 L68 88Z" fill="${hr}"/>`;
+  }
+  const longLocks = ["long", "wavy", "twintails"].includes(o.style);
+  const locks = longLocks ? `<path d="M62 100 Q50 150 62 178 L72 112Z" fill="${hr}"/><path d="M138 100 Q150 150 138 178 L128 112Z" fill="${hr}"/>`
+    : `<path d="M62 102 Q57 132 66 154 L73 112Z" fill="${hr}"/><path d="M138 102 Q143 132 134 154 L127 112Z" fill="${hr}"/>`;
+  const ties = o.style === "twintails" ? `<circle cx="66" cy="76" r="6" fill="#FF5FA2"/><circle cx="134" cy="76" r="6" fill="#FF5FA2"/>`
+    : o.style === "ponytail" ? `<circle cx="132" cy="70" r="5.5" fill="#FFD166"/>` : "";
+  const shine = o.style === "wavy" ? `<path d="M70 70 Q100 56 130 70 M58 150 Q62 170 58 190 M142 150 Q138 170 142 190" stroke="#fff" stroke-width="3" fill="none" opacity=".4" stroke-linecap="round"/>`
+    : `<path d="M74 66 Q100 54 126 66" stroke="#fff" stroke-width="3.2" fill="none" opacity=".38" stroke-linecap="round"/>`;
+  return bangs + locks + ties + shine;
+}
+function hatFront(o) {
+  const c = mix(o.shirt, "#FFFFFF", .15), cs = mix(o.shirt, "#000000", .3);
+  switch (o.hat) {
+    case "cap": return `<path d="M60 84 Q60 38 100 36 Q140 38 140 84Z" fill="${c}"/><path d="M56 84 Q100 72 144 84 Q148 96 100 94 Q52 96 56 84Z" fill="${cs}"/><circle cx="100" cy="38" r="4" fill="${cs}"/>`;
+    case "beret": return `<ellipse cx="94" cy="56" rx="52" ry="17" fill="${c}" transform="rotate(-10 94 56)"/><circle cx="92" cy="40" r="4" fill="${c}"/>`;
+    case "straw": return `<ellipse cx="100" cy="72" rx="80" ry="17" fill="#E9C77B" stroke="#B88A3E" stroke-width="1.5"/><path d="M64 70 Q66 32 100 30 Q134 32 136 70Z" fill="#F0D28E" stroke="#B88A3E" stroke-width="1.5"/><path d="M64 62 Q100 72 136 62 L136 69 Q100 79 64 69Z" fill="#E0533D"/>`;
+    case "flower": return `<g transform="translate(136 76)">${[0, 72, 144, 216, 288].map(a => `<ellipse cx="0" cy="-9" rx="7" ry="10.5" fill="#FF5FA2" transform="rotate(${a})"/>`).join("")}<circle r="4" fill="#FFD166"/></g>`;
+    case "headphones": return `<path d="M57 104 Q58 36 100 34 Q142 36 143 104" stroke="#241D3D" stroke-width="7" fill="none"/><rect x="47" y="92" width="17" height="28" rx="8" fill="${c}" stroke="#241D3D" stroke-width="2"/><rect x="136" y="92" width="17" height="28" rx="8" fill="${c}" stroke="#241D3D" stroke-width="2"/>`;
+    default: return "";
+  }
+}
+// One character, framed as a portrait (viewBox 0 0 200 240) or cropped to an avatar.
 function character(o) {
   const sk = o.skin, skS = mix(sk, "#7A3A4A", .22), hr = o.hair, hrS = mix(hr, "#100820", .35);
-  const back = o.style === "long" ? `<path d="M56 96 Q48 172 66 206 L134 206 Q152 172 144 96Z" fill="${hrS}"/>`
-    : o.style === "bob" ? `<path d="M56 96 Q52 152 70 160 L130 160 Q148 152 144 96Z" fill="${hrS}"/>` : "";
-  const bangs = o.style === "bob"
-    ? `<path d="M60 106 Q52 54 100 48 Q148 54 140 106 Q126 84 100 88 Q74 84 60 106Z" fill="${hr}"/>`
-    : `<path d="M60 106 Q52 54 100 48 Q148 54 140 106 L133 88 L127 106 L119 80 L110 101 L101 75 L92 101 L83 80 L75 106 L68 88Z" fill="${hr}"/>`;
   const acc = o.acc === "headset"
     ? `<path d="M57 104 Q58 36 100 34 Q142 36 143 104" stroke="#241D3D" stroke-width="6" fill="none"/>
        <rect x="49" y="94" width="15" height="24" rx="7" fill="#3A3366" stroke="#4FE3FF" stroke-width="1.6"/><rect x="136" y="94" width="15" height="24" rx="7" fill="#3A3366" stroke="#4FE3FF" stroke-width="1.6"/>
@@ -417,7 +528,8 @@ function character(o) {
        <path d="M122 132 h8 v6 h7 M124 140 h5" stroke="#FF3D6E" stroke-width="1.6" fill="none"/>` : "";
   const mouth = o.mood === "smirk" ? `<path d="M92 144 Q103 147 110 139" stroke="#8A2A44" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
     : `<path d="M92 142 Q100 150 108 142" stroke="#8A3A4A" stroke-width="2.4" fill="#C25070" stroke-linecap="round"/>`;
-  return `${back}
+  const glasses = o.glasses ? `<rect x="68" y="103" width="28" height="24" rx="9" fill="#fff" fill-opacity=".1" stroke="#2A1A30" stroke-width="2.6"/><rect x="104" y="103" width="28" height="24" rx="9" fill="#fff" fill-opacity=".1" stroke="#2A1A30" stroke-width="2.6"/><path d="M96 113 h8" stroke="#2A1A30" stroke-width="2.6"/>` : "";
+  return `${hairBack(o, hrS)}
     <path d="M24 240 Q34 184 100 176 Q166 184 176 240Z" fill="${o.shirt}"/><path d="M24 240 Q34 184 100 176 L100 240Z" fill="#000" opacity=".12"/>
     <path d="M86 178 L100 198 L114 178" fill="${mix(o.shirt, "#FFFFFF", .25)}"/>
     <path d="M88 148 L88 182 Q100 189 112 182 L112 148Z" fill="${skS}"/>
@@ -426,33 +538,35 @@ function character(o) {
     <ellipse cx="78" cy="136" rx="8.5" ry="4" fill="#FF7FA8" opacity=".45"/><ellipse cx="122" cy="136" rx="8.5" ry="4" fill="#FF7FA8" opacity=".45"/>
     ${eye(82, o.eye, true, o.acc === "android")}${eye(118, o.eye, false, o.acc === "android")}
     <path d="M100 127 l-2 4" stroke="${skS}" stroke-width="1.6" stroke-linecap="round"/>
-    ${mouth}
-    ${bangs}
-    <path d="M62 102 Q57 132 66 154 L73 112Z" fill="${hr}"/><path d="M138 102 Q143 132 134 154 L127 112Z" fill="${hr}"/>
-    <path d="M74 66 Q100 54 126 66" stroke="#fff" stroke-width="3.2" fill="none" opacity=".38" stroke-linecap="round"/>
-    ${acc}`;
+    ${mouth}${hairFront(o, hr)}${glasses}${o.acc ? acc : hatFront(o)}`;
 }
-function robot(seed) {
-  const c = EYES[seed % EYES.length];
-  return `<path d="M24 240 Q34 184 100 176 Q166 184 176 240Z" fill="#454B6B"/>
-    <rect x="94" y="146" width="12" height="34" fill="#6B7194"/>
-    <line x1="100" y1="48" x2="100" y2="30" stroke="#B9BEDB" stroke-width="4"/><circle cx="100" cy="27" r="6" fill="${c}"/>
-    <rect x="58" y="50" width="84" height="102" rx="26" fill="#D9DCEF"/><rect x="58" y="50" width="84" height="102" rx="26" fill="none" stroke="#8A90B8" stroke-width="3"/>
-    <rect x="66" y="90" width="68" height="34" rx="14" fill="#1A1438"/>
-    <circle cx="84" cy="107" r="7" fill="${c}"/><circle cx="116" cy="107" r="7" fill="${c}"/>
-    <circle cx="86" cy="104" r="2.2" fill="#fff"/><circle cx="118" cy="104" r="2.2" fill="#fff"/>
-    <path d="M88 136 Q100 142 112 136" stroke="#6B7194" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <ellipse cx="72" cy="132" rx="6" ry="3" fill="#FF7FA8" opacity=".5"/><ellipse cx="128" cy="132" rx="6" ry="3" fill="#FF7FA8" opacity=".5"/>`;
+// The same person seen from behind (players on the near side of the table, including you).
+function backView(o) {
+  const hr = o.hair, hrS = mix(hr, "#100820", .3), skS = mix(o.skin, "#7A3A4A", .22), sh = mix(o.shirt, "#000000", .15);
+  let extra = "";
+  if (o.style === "long") extra = `<path d="M60 100 Q54 172 70 204 L130 204 Q146 172 140 100Z" fill="${hr}"/>`;
+  else if (o.style === "wavy") extra = `<path d="${WAVY}" fill="${hr}"/><path d="M80 130 Q74 160 82 190 M100 134 Q96 166 102 196 M120 130 Q126 160 118 190" stroke="${hrS}" stroke-width="3" fill="none"/>`;
+  else if (o.style === "bob") extra = `<path d="M60 100 Q58 150 70 158 L130 158 Q142 150 140 100Z" fill="${hr}"/>`;
+  else if (o.style === "ponytail") extra = `<path d="M92 118 Q80 170 100 206 Q120 170 108 118Z" fill="${hr}"/><circle cx="100" cy="120" r="6" fill="#FFD166"/>`;
+  else if (o.style === "twintails") extra = `<path d="M66 80 Q24 110 36 196 Q60 170 70 118Z" fill="${hr}"/><path d="M134 80 Q176 110 164 196 Q140 170 130 118Z" fill="${hr}"/><circle cx="68" cy="82" r="6" fill="#FF5FA2"/><circle cx="132" cy="82" r="6" fill="#FF5FA2"/>`;
+  const spikes = o.style === "spiky" ? `<path d="M62 92 L54 70 L70 76 L72 54 L86 66 L96 46 L106 64 L120 50 L124 70 L140 64 L136 86Z" fill="${hr}"/>` : "";
+  const c = mix(o.shirt, "#FFFFFF", .15);
+  const hat = o.hat === "cap" ? `<path d="M60 86 Q60 40 100 38 Q140 40 140 86Z" fill="${c}"/><path d="M84 84 h32 v6 h-32Z" fill="${mix(o.shirt, "#000000", .3)}"/>`
+    : o.hat === "beret" ? `<ellipse cx="96" cy="60" rx="50" ry="18" fill="${c}"/>`
+    : o.hat === "straw" ? `<path d="M64 74 Q66 34 100 32 Q134 34 136 74Z" fill="#F0D28E" stroke="#B88A3E" stroke-width="1.5"/><ellipse cx="100" cy="76" rx="80" ry="16" fill="#E9C77B" stroke="#B88A3E" stroke-width="1.5"/><path d="M64 66 Q100 76 136 66 L136 73 Q100 83 64 73Z" fill="#E0533D"/>`
+    : o.hat === "flower" ? `<g transform="translate(64 80)">${[0, 72, 144, 216, 288].map(a => `<ellipse cx="0" cy="-9" rx="7" ry="10.5" fill="#FF5FA2" transform="rotate(${a})"/>`).join("")}<circle r="4" fill="#FFD166"/></g>`
+    : o.hat === "headphones" ? `<path d="M58 100 Q58 34 100 32 Q142 34 142 100" stroke="#241D3D" stroke-width="7" fill="none"/><rect x="48" y="90" width="16" height="26" rx="8" fill="${c}"/><rect x="136" y="90" width="16" height="26" rx="8" fill="${c}"/>` : "";
+  return `<path d="M24 240 Q34 184 100 176 Q166 184 176 240Z" fill="${sh}"/><rect x="90" y="140" width="20" height="40" fill="${skS}"/>
+    <ellipse cx="61" cy="108" rx="5.5" ry="9" fill="${o.skin}"/><ellipse cx="139" cy="108" rx="5.5" ry="9" fill="${o.skin}"/>
+    ${extra}<ellipse cx="100" cy="100" rx="40" ry="44" fill="${hr}"/>${spikes}
+    <path d="M74 74 Q100 60 126 74" stroke="#fff" stroke-width="3" fill="none" opacity=".3" stroke-linecap="round"/>${hat}`;
 }
-function avatar(pid, bot, cls = "ava") {
-  const h = hash(pid), bg = mix(HAIR[(h >>> 3) % HAIR.length], "#1A1238", .7);
-  const inner = bot ? robot(h) : character({ hair: HAIR[h % HAIR.length], eye: EYES[(h >>> 5) % EYES.length], skin: SKIN[(h >>> 9) % SKIN.length],
-    shirt: SHIRT[(h >>> 13) % SHIRT.length], style: ["spiky", "bob", "long"][(h >>> 17) % 3], mood: "smile" });
-  return `<svg class="${cls}" viewBox="42 38 116 116" aria-hidden="true"><rect x="0" y="0" width="200" height="240" fill="${bg}"/>${inner}</svg>`;
+function avatar(pid, cls = "ava") {
+  const l = lookOf(pid), o = lookOpts(l), bg = mix(o.hair, "#1A1238", .72);
+  return `<svg class="${cls}" viewBox="42 34 116 116" aria-hidden="true"><rect x="0" y="0" width="200" height="240" fill="${bg}"/>${character(o)}</svg>`;
 }
 let LINES = ""; for (let k = 0; k < 36; k++) { const a = k / 36 * Math.PI * 2, r1 = 70 + (k % 3) * 12; LINES += `M${(100 + Math.cos(a) * r1).toFixed(1)} ${(110 + Math.sin(a) * r1).toFixed(1)} L${(100 + Math.cos(a) * 190).toFixed(1)} ${(110 + Math.sin(a) * 190).toFixed(1)} `; }
 const SPARK = (x, y, s, c) => `<path d="M${x} ${y - s} Q${x + s * .18} ${y - s * .18} ${x + s} ${y} Q${x + s * .18} ${y + s * .18} ${x} ${y + s} Q${x - s * .18} ${y + s * .18} ${x - s} ${y} Q${x - s * .18} ${y - s * .18} ${x} ${y - s}Z" fill="${c}"/>`;
-// Team portraits: the Sysadmin wears a headset; the Rogue AI is an android with a slit-pupil red gaze.
 function portrait(team, cls = "") {
   const sys = team !== "R";
   const ch = sys ? character({ hair: "#4A7CFF", eye: "#3FD0FF", skin: "#FFE3CF", shirt: "#2D3A7A", style: "spiky", acc: "headset", mood: "smile" })
@@ -471,35 +585,32 @@ function portrait(team, cls = "") {
     <text x="100" y="235" text-anchor="middle" font-family="M PLUS Rounded 1c, sans-serif" font-size="10" fill="#fff" opacity=".8">${sys ? "システム管理者" : "暴走AI"}</text>
     <rect x="2" y="2" width="196" height="236" rx="12" fill="none" stroke="url(#gGold)" stroke-width="4"/></svg>`;
 }
-// Cable cards, viewBox 0 0 60 84.
 const FRAME = `<rect x="1.5" y="1.5" width="57" height="81" rx="7" fill="none" stroke="url(#gGold)" stroke-width="2.5"/>`;
-function cardBack() {
-  return `<svg viewBox="0 0 60 84" aria-hidden="true"><rect x="1" y="1" width="58" height="82" rx="7" fill="url(#gBack)"/>
+const BACK_INNER = `<rect x="1" y="1" width="58" height="82" rx="7" fill="url(#gBack)"/>
     <rect x="6" y="6" width="48" height="72" rx="4" fill="url(#pDots)" stroke="#FFD166" stroke-opacity=".35"/>
     <path d="M30 24 L34 37 L47 42 L34 47 L30 60 L26 47 L13 42 L26 37Z" fill="url(#gGold)"/>
     <circle cx="30" cy="42" r="6.5" fill="#1A1240" stroke="#FF5FA2" stroke-width="1.6"/><circle cx="30" cy="42" r="2.2" fill="#4FE3FF"/>
-    ${SPARK(12, 14, 3, "#FFE7A3")}${SPARK(48, 70, 3, "#FFE7A3")}${FRAME}</svg>`;
-}
-function cardFace(c) {
+    ${SPARK(12, 14, 3, "#FFE7A3")}${SPARK(48, 70, 3, "#FFE7A3")}${FRAME}`;
+const cardBack = () => `<svg viewBox="0 0 60 84" aria-hidden="true">${BACK_INNER}</svg>`;
+function faceInner(c) {
   const lab = (t, col) => `<rect x="6" y="66" width="48" height="13" rx="4" fill="#0B0620" opacity=".55"/><text x="30" y="76" text-anchor="middle" font-family="Dela Gothic One, Arial Black, sans-serif" font-size="9" fill="${col}">${t}</text>`;
-  if (c === "K") return `<svg viewBox="0 0 60 84" role="img" aria-label="Clean key"><rect x="1" y="1" width="58" height="82" rx="7" fill="url(#gKey)"/>
-    <circle cx="30" cy="36" r="22" fill="url(#gGlowK)"/>
+  if (c === "K") return `<rect x="1" y="1" width="58" height="82" rx="7" fill="url(#gKey)"/><circle cx="30" cy="36" r="22" fill="url(#gGlowK)"/>
     <circle cx="30" cy="26" r="8" fill="none" stroke="#5CF2B0" stroke-width="4"/><circle cx="30" cy="26" r="8" fill="none" stroke="#E6FFF6" stroke-width="1.2"/>
     <rect x="28" y="33" width="4" height="25" rx="1.5" fill="#5CF2B0"/><rect x="32" y="49" width="7" height="3.5" rx="1" fill="#5CF2B0"/><rect x="32" y="54.5" width="5" height="3.5" rx="1" fill="#5CF2B0"/>
-    ${SPARK(14, 16, 4, "#E6FFF6")}${SPARK(47, 22, 3, "#fff")}${SPARK(46, 56, 3.5, "#E6FFF6")}${lab("KEY", "#9BFFE0")}${FRAME}</svg>`;
-  if (c === "V") return `<svg viewBox="0 0 60 84" role="img" aria-label="Rogue core"><rect x="1" y="1" width="58" height="82" rx="7" fill="url(#gCore)"/>
-    <circle cx="30" cy="36" r="25" fill="url(#gGlowV)"/>
+    ${SPARK(14, 16, 4, "#E6FFF6")}${SPARK(47, 22, 3, "#fff")}${SPARK(46, 56, 3.5, "#E6FFF6")}${lab("KEY", "#9BFFE0")}${FRAME}`;
+  if (c === "V") return `<rect x="1" y="1" width="58" height="82" rx="7" fill="url(#gCore)"/><circle cx="30" cy="36" r="25" fill="url(#gGlowV)"/>
     <path d="M30 12 L33 22 L42 15 L39 25 L50 24 L42 31 L52 36 L42 41 L50 48 L39 47 L42 57 L33 50 L30 60 L27 50 L18 57 L21 47 L10 48 L18 41 L8 36 L18 31 L10 24 L21 25 L18 15 L27 22Z" fill="#FF3D6E" opacity=".75"/>
     <circle cx="30" cy="36" r="12" fill="url(#gOrb)"/><ellipse cx="30" cy="36" rx="8" ry="5" fill="#FFE37A"/><ellipse cx="30" cy="36" rx="1.7" ry="5" fill="#1A0008"/>
-    <circle cx="26" cy="31" r="2" fill="#fff" opacity=".8"/>${lab("CORE", "#FFB3C6")}${FRAME}</svg>`;
-  return `<svg viewBox="0 0 60 84" role="img" aria-label="Dead cable"><rect x="1" y="1" width="58" height="82" rx="7" fill="url(#gDead)"/>
+    <circle cx="26" cy="31" r="2" fill="#fff" opacity=".8"/>${lab("CORE", "#FFB3C6")}${FRAME}`;
+  return `<rect x="1" y="1" width="58" height="82" rx="7" fill="url(#gDead)"/>
     <path d="M30 50 Q22 58 30 62 Q38 66 30 72" stroke="#6E7A96" stroke-width="4" fill="none" stroke-linecap="round"/>
     <rect x="20" y="24" width="20" height="26" rx="5" fill="#A7B2CC"/><rect x="24" y="16" width="3.5" height="9" rx="1" fill="#C9D1E3"/><rect x="32.5" y="16" width="3.5" height="9" rx="1" fill="#C9D1E3"/>
     <path d="M24 35 l4 2 M28 35 l-4 2 M32 35 l4 2 M36 35 l-4 2" stroke="#2E3448" stroke-width="1.6" stroke-linecap="round"/>
     <path d="M26 43 Q30 40 34 43" stroke="#2E3448" stroke-width="1.6" fill="none" stroke-linecap="round"/>
     <text x="44" y="22" font-family="Dela Gothic One, sans-serif" font-size="8" fill="#C9D1E3" opacity=".8">z</text><text x="48" y="15" font-family="Dela Gothic One, sans-serif" font-size="6" fill="#C9D1E3" opacity=".6">z</text>
-    ${lab("DEAD", "#C9D1E3")}${FRAME}</svg>`;
+    ${lab("DEAD", "#C9D1E3")}${FRAME}`;
 }
+const cardFace = c => `<svg viewBox="0 0 60 84" role="img" aria-label="${c === "K" ? "Clean key" : c === "V" ? "Rogue core" : "Dead cable"}">${faceInner(c)}</svg>`;
 function burst(c) {
   const col = c === "K" ? "#5CF2B0" : c === "V" ? "#FF3D6E" : "#FFD166", word = c === "K" ? "KEY GET!" : c === "V" ? "BOOM!!" : "SNIP!";
   let spikes = ""; for (let k = 0; k < 20; k++) { const a = k / 20 * Math.PI * 2, r = k % 2 ? 70 : 100; spikes += `${(150 + Math.cos(a) * r * 1.35).toFixed(1)},${(100 + Math.sin(a) * r * .8).toFixed(1)} `; }
@@ -509,11 +620,236 @@ function burst(c) {
 }
 let fxTimer = null;
 function playFx(c) {
+  Music.sfx(c);
   const el = document.getElementById("fx"); if (!el) return;
   el.innerHTML = burst(c); el.classList.remove("show"); void el.offsetWidth; el.classList.add("show");
   if (c === "V") { document.body.classList.remove("shake"); void document.body.offsetWidth; document.body.classList.add("shake"); }
   clearTimeout(fxTimer); fxTimer = setTimeout(() => { el.classList.remove("show"); el.innerHTML = ""; }, 1000);
 }
+
+// Features released step by step.
+const FEATURES = { settings: false, music: false };
+// ---------- settings ----------
+const BGS = { dr: "Dominican Republic", montreal: "Montreal", desert: "Desert", beach: "Beach" };
+const TRACKS = { match: "Match the place", bachata: "Bachata del Mar", lofi: "Montreal lo-fi", desert: "Desert caravan", beach: "Steel-drum beach", off: "Off" };
+const BG_TRACK = { dr: "bachata", montreal: "lofi", desert: "desert", beach: "beach" };
+const settings = Object.assign({ bg: "dr", music: "match", vol: 0.6, view: "table" }, LS.get("rc-settings") || {});
+if (!BGS[settings.bg]) settings.bg = "dr";
+if (!TRACKS[settings.music]) settings.music = "match";
+const saveSettings = () => LS.set("rc-settings", settings);
+const trackNow = () => settings.music === "match" ? BG_TRACK[settings.bg] : settings.music;
+let settingsOpen = false;
+
+// ---------- music: original tracks synthesized live with Web Audio ----------
+const Music = (() => {
+  let ctx = null, master = null, sfxGain = null, noise = null, timer = null, step = 0, next = 0, cur = null;
+  const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+  function ensure() {
+    if (ctx) return true;
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
+    ctx = new AC(); master = ctx.createGain(); master.gain.value = 0; sfxGain = ctx.createGain(); sfxGain.gain.value = .5;
+    const comp = ctx.createDynamicsCompressor(); master.connect(comp); sfxGain.connect(comp); comp.connect(ctx.destination);
+    noise = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate); const d = noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    return true;
+  }
+  function out(node, t, a, d, peak, dest) {
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + d);
+    node.connect(g); g.connect(dest || master);
+  }
+  function pluck(m, t, d, v, bright = 2600, type = "sawtooth", dest) {
+    const o = ctx.createOscillator(); o.type = type; o.frequency.value = mtof(m);
+    const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.setValueAtTime(bright, t); f.frequency.exponentialRampToValueAtTime(380, t + d);
+    o.connect(f); out(f, t, .004, d, v, dest); o.start(t); o.stop(t + d + .05);
+  }
+  function tone(m, t, d, v, type = "sine", a = .01, dest) { const o = ctx.createOscillator(); o.type = type; o.frequency.value = mtof(m); out(o, t, a, d, v, dest); o.start(t); o.stop(t + a + d + .05); }
+  function hit(t, d, v, freq, q = 1, type = "bandpass", dest) {
+    const s = ctx.createBufferSource(); s.buffer = noise; const f = ctx.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q;
+    s.connect(f); out(f, t, .002, d, v, dest); s.start(t, Math.random() * .5); s.stop(t + d + .05);
+  }
+  function drum(t, f0, f1, d, v, dest) { const o = ctx.createOscillator(); o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + d); out(o, t, .002, d, v, dest); o.start(t); o.stop(t + d + .05); }
+  const seeded = s => () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const THEMES = {
+    // Original bachata-style groove: requinto arpeggios, offbeat segunda strums, syncopated bass, güira and bongo.
+    bachata: { bpm: 126, play(s, t, dt) {
+      const CH = [[57, 60, 64], [55, 59, 62], [53, 57, 60], [52, 56, 59]], bar = Math.floor(s / 16) % 4, i = s % 16, ch = CH[bar];
+      const arp = [0, 1, 2, 1, 2, 1, 0, 1];
+      if (i % 2 === 0 && !(bar % 2 === 1 && i >= 12)) pluck(ch[arp[i / 2]] + 24, t, .32, .09, 3400);
+      if (bar % 2 === 1 && i >= 12) pluck([ch[2] + 24, ch[1] + 24, ch[0] + 24, ch[2] + 12][i - 12], t, .2, .08, 3400);
+      if (i % 4 === 2) ch.forEach((n, k) => pluck(n + 12, t + k * .012, .16, .04, 1800));
+      if (i === 0) tone(ch[0] - 12, t, .34, .3, "triangle"); if (i === 6) tone(ch[2] - 12, t, .2, .22, "triangle");
+      if (i === 8) tone(ch[0] - 12, t, .3, .26, "triangle"); if (i === 14) tone(ch[1] - 12, t, .16, .2, "triangle");
+      if (i % 2 === 0) hit(t, .05, i % 4 === 0 ? .16 : .09, 7500, .8, "highpass"); else if (i % 4 === 3) hit(t, .03, .05, 8200, .8, "highpass");
+      if ([2, 4, 6, 10, 12, 14].includes(i)) drum(t, 540, 400, .08, .2); if (i === 7 || i === 15) drum(t, 330, 230, .14, .24);
+    } },
+    lofi: { bpm: 76, swing: .2, play(s, t, dt) {
+      const CH = [[53, 57, 60, 64], [52, 55, 59, 62], [50, 53, 57, 60], [48, 52, 55, 59]], bar = Math.floor(s / 16) % 4, i = s % 16, ch = CH[bar], r = seeded(bar * 97 + i + 1);
+      if (i === 0) { ch.forEach(n => { tone(n + 12, t, dt * 15, .04, "triangle", .08); tone(n + 24, t, dt * 8, .012, "sine", .05); }); tone(ch[0] - 12, t, dt * 7, .26); }
+      if (i === 8) tone(ch[0] - 12, t, dt * 6, .2);
+      if (i === 0 || i === 10) drum(t, 120, 45, .25, .5); if (i === 4 || i === 12) hit(t, .14, .16, 1800, .7);
+      if (i % 2 === 0) hit(t, .03, .045, 9000, 1, "highpass");
+      if (i % 4 === 2 && r() < .55) pluck([72, 74, 76, 79, 81][Math.floor(r() * 5)], t, .5, .05, 1500, "triangle");
+      if (Math.random() < .25) hit(t + Math.random() * dt, .008, .025, 3000, 2);
+    } },
+    desert: { bpm: 100, play(s, t, dt) {
+      const sc = [62, 63, 66, 67, 69, 70, 72, 74], bar = Math.floor(s / 16) % 4, i = s % 16, r = seeded(bar * 131 + i * 7 + 3);
+      if (i === 0) tone(50, t, dt * 15, .1, "triangle", .2);
+      if (i === 0 || i === 6) drum(t, 110, 55, .25, .45); if (i === 4 || i === 10 || i === 12) hit(t, .06, .16, 2600, 2);
+      if (i % 2 === 0 && r() < .75) pluck(sc[Math.floor(r() * sc.length)] + (bar === 3 ? -12 : 0), t, .38, .09, 2200);
+      if (i === 14 && bar % 2) pluck(sc[1], t, .2, .07, 2200);
+    } },
+    beach: { bpm: 104, play(s, t, dt) {
+      const CH = [[60, 64, 67], [57, 60, 64], [53, 57, 60], [55, 59, 62]], bar = Math.floor(s / 16) % 4, i = s % 16, ch = CH[bar];
+      const mel = [2, 1, 0, 1, 2, 2, 1, 0];
+      if (i % 2 === 0) { const n = ch[mel[i / 2]] + 12; tone(n, t, .38, .09); tone(n + 12, t, .14, .03); }
+      if (i % 8 === 4) ch.forEach(n => pluck(n, t, .12, .035, 1500, "square"));
+      if (i === 0 || i === 6 || i === 8) tone(ch[0] - 12, t, .3, .26, "triangle");
+      hit(t, .03, i % 4 === 2 ? .06 : .03, 6000, .8, "highpass"); if (i === 0 || i === 8) drum(t, 110, 50, .2, .4);
+    } },
+  };
+  function schedule() {
+    const T = THEMES[cur]; if (!T) return; const dt = 60 / T.bpm / 4;
+    while (next < ctx.currentTime + .15) { let tt = next; if (T.swing && step % 2 === 1) tt += dt * T.swing; T.play(step, tt, dt); next += dt; step++; }
+  }
+  return {
+    play(theme, vol) {
+      if (!THEMES[theme]) return this.stop();
+      if (!ensure()) return; if (ctx.state === "suspended") ctx.resume();
+      if (cur !== theme) { cur = theme; step = 0; next = ctx.currentTime + .08; }
+      master.gain.setTargetAtTime(vol * .6, ctx.currentTime, .1);
+      if (!timer) timer = setInterval(schedule, 30);
+    },
+    stop() { clearInterval(timer); timer = null; cur = null; if (master) master.gain.setTargetAtTime(0, ctx.currentTime, .05); },
+    pause() { if (ctx && ctx.state === "running") ctx.suspend(); },
+    resume() { if (ctx && ctx.state === "suspended") ctx.resume(); },
+    sfx(c) {
+      if (!ctx || settings.vol === 0) return; const t = ctx.currentTime;
+      if (c === "K") [76, 79, 84, 88].forEach((m, k) => tone(m, t + k * .07, .25, .12, "sine", .005, sfxGain));
+      else if (c === "V") { drum(t, 95, 30, .7, .9, sfxGain); hit(t, .5, .5, 700, .5, "lowpass", sfxGain); }
+      else { hit(t, .05, .4, 5000, 2, "bandpass", sfxGain); hit(t + .06, .04, .3, 6500, 2, "bandpass", sfxGain); }
+    },
+  };
+})();
+function applyMusic() { if (!FEATURES.music) return; if (trackNow() === "off" || settings.music === "off") Music.stop(); else Music.play(trackNow(), settings.vol); }
+let audioUnlocked = false;
+document.addEventListener("pointerdown", () => { if (!audioUnlocked) { audioUnlocked = true; applyMusic(); } }, { capture: true });
+
+// ---------- table scenes ----------
+const nowS = () => (typeof performance !== "undefined" ? performance.now() : 0) / 1000;
+// Negative delays keep looping animations in step when the page re-renders.
+const delay = (dur, off = 0) => `animation-delay:-${((nowS() + off) % dur).toFixed(2)}s`;
+function palm(x, y, s, flip) {
+  const f = flip ? -1 : 1;
+  return `<g transform="translate(${x} ${y}) scale(${s * f} ${s})"><path d="M0 0 Q8 -40 2 -90" stroke="#5A3A22" stroke-width="7" fill="none" stroke-linecap="round"/>
+    ${[-150, -115, -70, -30, 10].map(a => `<path d="M2 -90 Q${(2 + Math.cos(a * Math.PI / 180) * 30).toFixed(1)} ${(-90 + Math.sin(a * Math.PI / 180) * 30 - 10).toFixed(1)} ${(2 + Math.cos(a * Math.PI / 180) * 52).toFixed(1)} ${(-90 + Math.sin(a * Math.PI / 180) * 52 + 14).toFixed(1)}" stroke="#2E7D4F" stroke-width="7" fill="none" stroke-linecap="round"/>`).join("")}
+    <circle cx="0" cy="-86" r="4" fill="#6B4423"/><circle cx="6" cy="-84" r="4" fill="#6B4423"/></g>`;
+}
+function couple(x, y, s, shirt, dress, off) {
+  return `<g transform="translate(${x} ${y}) scale(${s})"><g class="dance" style="${delay(.95, off)}">
+    <circle cx="-7" cy="-41" r="5" fill="#3A2318"/><path d="M-13 -35 L-1 -35 L-3 -14 L-11 -14Z" fill="${shirt}"/>
+    <path d="M-10 -14 L-12 0 M-4 -14 L-2 0" stroke="#1E1A2A" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M-2 -31 Q3 -26 6 -31" stroke="#8A5638" stroke-width="2.2" fill="none"/>
+    <g class="spin" style="${delay(3.8, off)}"><circle cx="7" cy="-41" r="4.6" fill="#3A2318"/><path d="M9 -44 Q16 -38 12 -26" stroke="#2A1A12" stroke-width="3" fill="none"/>
+    <path d="M3 -35 L11 -35 L17 -11 L-3 -11Z" fill="${dress}"/><path d="M4 -11 L3 0 M10 -11 L11 0" stroke="#8A5638" stroke-width="2.4" stroke-linecap="round"/></g>
+  </g></g>`;
+}
+function sceneBg(bg) {
+  const r = seededRnd(hash(bg));
+  if (bg === "montreal") {
+    let city = ""; for (let x = 150; x < 400;) { const w = 20 + r() * 22, h = 34 + r() * 56; city += `<rect x="${x.toFixed(0)}" y="${(150 - h).toFixed(0)}" width="${(w - 2).toFixed(0)}" height="${h.toFixed(0)}" fill="#141A3C"/>`;
+      for (let wy = 150 - h + 6; wy < 144; wy += 9) for (let wx = x + 4; wx < x + w - 6; wx += 7) if (r() > .5) city += `<rect x="${wx.toFixed(0)}" y="${wy.toFixed(0)}" width="3" height="4" fill="#FFD98A" opacity=".85"/>`; x += w; }
+    let snow = ""; for (let k = 0; k < 34; k++) snow += `<circle class="snow" cx="${(r() * 400).toFixed(0)}" cy="${(r() * 140 - 20).toFixed(0)}" r="${(1 + r() * 1.6).toFixed(1)}" fill="#fff" opacity=".85" style="${delay(6, k * .7)}"/>`;
+    let bulbs = ""; for (let k = 1; k < 16; k++) { const x = k * 25, y = 16 + Math.sin(k / 16 * Math.PI * 2) * 10 + 10; bulbs += `<circle class="tw" cx="${x}" cy="${y.toFixed(0)}" r="3" fill="${["#FFD166", "#FF5FA2", "#4FE3FF", "#5CF2B0"][k % 4]}" style="${delay(1.6, k * .4)}"/>`; }
+    return `<rect width="400" height="150" fill="url(#gSkyMtl)"/><circle cx="330" cy="40" r="15" fill="#FFF6D6"/><circle cx="336" cy="36" r="13" fill="url(#gSkyMtl)" opacity=".0"/>
+      <path d="M0 122 Q90 70 190 114 L190 150 L0 150Z" fill="#1B2350"/><path d="M95 66 v20 M89 73 h12" stroke="#FFF3B0" stroke-width="2.4"/>${city}
+      <path d="M0 22 Q100 50 200 22 Q300 50 400 22" stroke="#2A2340" stroke-width="1.5" fill="none"/>${bulbs}${snow}
+      <rect y="150" width="400" height="190" fill="url(#gFloorMtl)"/>${[170, 196, 228, 268, 316].map(y => `<path d="M0 ${y} H400" stroke="#000" stroke-opacity=".18"/>`).join("")}`;
+  }
+  if (bg === "desert") {
+    const lantern = (x, h) => `<path d="M${x} 0 V${h}" stroke="#3A2A20"/><circle cx="${x}" cy="${h + 10}" r="18" fill="#FFB347" opacity=".18"/><rect x="${x - 6}" y="${h}" width="12" height="18" rx="4" fill="#FF9A3C" stroke="#7A3A12"/>`;
+    return `<rect width="400" height="150" fill="url(#gSkyDes)"/><circle cx="300" cy="104" r="34" fill="#FFE29A" opacity=".9"/>
+      <path d="M0 116 Q80 86 170 114 Q260 138 400 100 L400 150 L0 150Z" fill="#E9A35E"/><path d="M0 136 Q120 112 240 134 Q320 146 400 128 L400 150 L0 150Z" fill="#D7884A"/>
+      <path d="M62 112 q4 -10 10 -8 q4 -8 10 0 q6 -2 8 6 l-2 8 h-2 l-1 -6 h-14 l-1 6 h-2Z" fill="#7A3A1E"/>
+      ${lantern(40, 20)}${lantern(360, 34)}${lantern(250, 12)}
+      <rect y="150" width="400" height="190" fill="url(#gFloorDes)"/>
+      <ellipse cx="200" cy="208" rx="188" ry="86" fill="#9B2D3A"/><ellipse cx="200" cy="208" rx="176" ry="78" fill="none" stroke="#F2C14E" stroke-width="3" stroke-dasharray="10 6"/>`;
+  }
+  if (bg === "beach") {
+    let waves = ""; for (let k = 0; k < 6; k++) waves += `<path class="wave" d="M${-20 + k * 70} ${112 + (k % 3) * 11} q15 -5 30 0 t30 0" stroke="#BDF3FF" stroke-width="2" fill="none" opacity=".7" style="${delay(3, k)}"/>`;
+    return `<rect width="400" height="150" fill="url(#gSkyBea)"/><circle cx="90" cy="70" r="26" fill="#FFF1B0"/>
+      <rect y="100" width="400" height="50" fill="#2EA3C9"/>${waves}<path d="M0 146 Q200 136 400 146 L400 150 L0 150Z" fill="#E9FBFF" opacity=".8"/>
+      <path d="M150 40 l6 4 l6 -4 M180 30 l5 3 l5 -3" stroke="#3A3A4A" stroke-width="1.6" fill="none"/>
+      ${palm(22, 160, .9, false)}${palm(378, 160, .95, true)}
+      <rect y="150" width="400" height="190" fill="url(#gFloorBea)"/>`;
+  }
+  // Dominican Republic: colourful houses by the sea, flag-colour bunting, couples dancing bachata behind the table.
+  const houses = [["#FF7FA8", 0], ["#3FD0C9", 64], ["#FFD166", 128], ["#8EE06B", 192], ["#B28DFF", 256], ["#FF9A5C", 320]].map(([c, x]) =>
+    `<rect x="${x}" y="78" width="62" height="72" fill="${c}"/><path d="M${x - 3} 80 L${x + 31} 60 L${x + 65} 80Z" fill="#8A3B3B"/>
+     <rect x="${x + 24}" y="112" width="14" height="38" fill="#5A3A22"/><rect x="${x + 8}" y="92" width="12" height="12" fill="#FFF6D6"/><rect x="${x + 42}" y="92" width="12" height="12" fill="#FFF6D6"/>`).join("");
+  let flags = ""; for (let k = 0; k < 20; k++) { const x = k * 21 + 4, y = 22 + Math.sin(k / 19 * Math.PI) * 18; flags += `<path d="M${x} ${y.toFixed(0)} l12 0 l-6 11Z" fill="${["#002D62", "#CE1126", "#FFFFFF"][k % 3]}"/>`; }
+  return `<rect width="400" height="150" fill="url(#gSkyDr)"/><rect y="66" width="400" height="14" fill="#3B6FB6"/>${houses}
+    <path d="M0 22 Q200 58 400 22" stroke="#3A2A30" stroke-width="1.2" fill="none"/>${flags}
+    ${palm(16, 156, .8, false)}${palm(386, 156, .85, true)}
+    ${couple(70, 150, 1.05, "#F4F1EA", "#CE1126", 0)}${couple(200, 146, .95, "#3A6EA5", "#FFD166", .3)}${couple(332, 150, 1.05, "#2F2F3A", "#FF5FA2", .6)}
+    <rect y="150" width="400" height="190" fill="url(#gFloorDr)"/>${[0, 1, 2, 3, 4, 5, 6, 7, 8].map(k => `<path d="M${k * 50} 150 L${(k * 50 - 200) * 1.8 + 200} 340" stroke="#000" stroke-opacity=".12"/>`).join("")}
+    ${[178, 214, 262].map(y => `<path d="M0 ${y} H400" stroke="#000" stroke-opacity=".12"/>`).join("")}`;
+}
+function seededRnd(s) { s = (s % 2147483646) + 1; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+const TABLE_TOP = { dr: "url(#gTblDr)", montreal: "url(#gTblMtl)", desert: "url(#gTblDes)", beach: "url(#gTblBea)" };
+const TABLE_RIM = { dr: "#155E58", montreal: "#4A2C1A", desert: "#7A5216", beach: "#8A6236" };
+
+// Everyone around one table. You sit at the bottom (seen from behind); your cards lie in front of you.
+function tableScene(seats, st, myTurn) {
+  const n = seats.length, C = { x: 200, y: 200 }, RX = 158, RY = 96;
+  const meIdx = Math.max(0, seats.findIndex(s => s.pid === me.pid));
+  const layout = seats.map((s, j) => {
+    const a = Math.PI / 2 + ((j - meIdx + n) % n) / n * Math.PI * 2, sin = Math.sin(a), cos = Math.cos(a), depth = (sin + 1) / 2;
+    return { ...s, a, sin, cos, depth, x: C.x + cos * RX, y: C.y + sin * RY };
+  });
+  const front = layout.filter(p => p.sin < .3).sort((a, b) => a.y - b.y), back = layout.filter(p => p.sin >= .3).sort((a, b) => a.y - b.y);
+  const drawFront = p => { const s = .4 + .26 * p.depth, o = lookOpts(lookOf(p.pid));
+    return `<g transform="translate(${(p.x - 100 * s).toFixed(1)} ${(p.y - 182 * s).toFixed(1)}) scale(${s.toFixed(3)})">
+      <rect x="40" y="96" width="120" height="150" rx="26" fill="${mix(TABLE_RIM[settings.bg], "#000000", .2)}"/>${character(o)}</g>`; };
+  const drawBack = p => { const s = .5 + .14 * p.depth, hy = 262 + 34 * s + (p.sin - .3) * 8;
+    return `<g transform="translate(${(p.x - 100 * s).toFixed(1)} ${(hy - 100 * s).toFixed(1)}) scale(${s.toFixed(3)})">${backView(lookOpts(lookOf(p.pid)))}</g>`; };
+  let cards = "";
+  if (st) for (const p of layout) {
+    const row = p.cards || ""; if (!row.length) continue;
+    const k = p.sin >= .3 ? .4 : .56, cx = C.x + p.cos * RX * k, cy = C.y + p.sin * RY * k;
+    const cw = (13 + 8 * p.depth) * (n >= 7 ? .82 : 1), ch = cw * 1.4 * .62, gap = 2.5, total = row.length * cw + (row.length - 1) * gap;
+    [...row].forEach((c, i) => {
+      const x = cx - total / 2 + i * (cw + gap), y = cy - ch / 2;
+      const inner = c === "." ? BACK_INNER : faceInner(c);
+      const can = c === "." && myTurn && p.pid !== me.pid, fresh = freshCable === p.pid + ":" + i, pend = pending && pending.t === p.pid && pending.i === i;
+      const attrs = c === "." ? `data-t="${esc(p.pid)}" data-i="${i}" ${can ? `tabindex="0" role="button" aria-label="Cut ${esc(p.name)}'s cable ${i + 1}"` : ""}` : "";
+      cards += `<g class="tcard ${can ? "can" : ""} ${fresh ? "fresh" : ""} ${pend ? "pending" : ""}" ${attrs}>
+        <rect x="${(x + 1.5).toFixed(1)}" y="${(y + 2).toFixed(1)}" width="${cw.toFixed(1)}" height="${ch.toFixed(1)}" rx="2" fill="#000" opacity=".3"/>
+        <svg x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${cw.toFixed(1)}" height="${ch.toFixed(1)}" viewBox="0 0 60 84" preserveAspectRatio="none">${inner}</svg></g>`;
+    });
+    if (p.pid === st.tp) cards += `<text x="${(cx + total / 2 + 9).toFixed(1)}" y="${(cy + 5).toFixed(1)}" font-size="${(12 + 6 * p.depth).toFixed(0)}" class="scis">✂</text>`;
+  }
+  const tags = layout.map(p => {
+    const isBack = p.sin >= .3, ty = isBack ? 330 : p.y + 4, cl = p.claim;
+    const label = esc(p.name) + (p.pid === me.pid ? " (you)" : ""), w = Math.max(54, label.length * 6.2 + 16);
+    const claim = cl ? `<text x="${p.x.toFixed(1)}" y="${(ty + 19).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="800" fill="${cl.v ? "#FF8AA8" : "#9BFFE0"}" stroke="#120C26" stroke-width="3" paint-order="stroke">says ${cl.k} key${cl.k === 1 ? "" : "s"}${cl.v ? " + core" : ""}</text>` : "";
+    const cut = st && p.pid === st.tp;
+    return `<g><rect x="${(p.x - w / 2).toFixed(1)}" y="${(ty - 9).toFixed(1)}" width="${w.toFixed(1)}" height="16" rx="8" fill="${cut ? "#FFD166" : "rgba(18,12,38,.82)"}" stroke="${p.bot ? "#B9ADDB" : "#FF5FA2"}" stroke-width="1.2"/>
+      <text x="${p.x.toFixed(1)}" y="${(ty + 3).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="800" fill="${cut ? "#3A2200" : "#F7F2FF"}">${cut ? "✂ " : ""}${label}</text>${claim}</g>`;
+  }).join("");
+  const center = st ? `<g><rect x="160" y="190" width="80" height="20" rx="10" fill="rgba(0,0,0,.35)"/><text x="200" y="204" text-anchor="middle" font-size="9.5" font-weight="800" fill="#FFE7A3">ROUND ${st.rd} · ${st.kf}/${st.need} KEYS</text></g>` : "";
+  const dominoes = settings.bg === "dr" ? `<g opacity=".9"><rect x="128" y="176" width="16" height="8" rx="1.5" fill="#FFF6E6" transform="rotate(-18 136 180)"/><rect x="252" y="214" width="16" height="8" rx="1.5" fill="#FFF6E6" transform="rotate(24 260 218)"/></g>` : "";
+  return `<svg class="scene" viewBox="0 0 400 340" role="group" aria-label="Table with ${n} players">
+    ${sceneBg(settings.bg)}
+    ${front.map(drawFront).join("")}
+    <ellipse cx="200" cy="216" rx="164" ry="70" fill="#000" opacity=".35"/>
+    <ellipse cx="200" cy="206" rx="156" ry="64" fill="${TABLE_RIM[settings.bg]}"/>
+    <ellipse cx="200" cy="200" rx="150" ry="60" fill="${TABLE_TOP[settings.bg]}"/>
+    <ellipse cx="200" cy="200" rx="132" ry="50" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="1.5"/>
+    ${dominoes}${center}${cards}
+    ${back.map(drawBack).join("")}
+    ${tags}
+  </svg>`;
+}
+
 function rulesHTML() {
   return `
   <div class="teams">
@@ -529,13 +865,56 @@ function rulesHTML() {
     <li><b>Secret teams.</b> Each phone secretly shows your team. Press and hold your card to peek, and keep it hidden.</li>
     <li><b>Deal.</b> Everyone gets 4 face-down cables. You see how many keys you hold (and if you hold the core), but not which card is which.</li>
     <li><b>Talk.</b> Say what you hold, or post a claim with the buttons. Sysadmins usually tell the truth. Rogue AIs may lie.</li>
-    <li><b>Cut.</b> The player with the cutter taps one face-down cable of another player. It flips for everyone. The player who was cut takes the cutter.</li>
+    <li><b>Cut.</b> The player with the cutter taps one face-down cable of another player, right on the table. It flips for everyone. The player who was cut takes the cutter.</li>
     <li><b>Rounds.</b> A round ends after one cut per player. The uncut cables are shuffled and dealt again: 4, then 3, then 2 cables each.</li>
     <li><b>Win.</b> Sysadmins win when all clean keys are found. Rogue AIs win the moment the core is cut, or when 3 rounds end first.</li>
   </ol>
-  <p class="muted" style="margin-top:10px;font-size:.85rem">Playing alone or with 2? Computer players fill the empty seats.</p>`;
+  <p class="muted" style="margin-top:10px;font-size:.85rem">Playing alone or with 2? Computer players fill the empty seats. </p>`;
 }
-{ const rb = document.getElementById && document.getElementById("rules-body"); if (rb) rb.innerHTML = rulesHTML(); }
+{ const rb = document.getElementById && document.getElementById("rules-body"); if (rb) rb.innerHTML = rulesHTML();
+  for (const [id, on] of [["gear", FEATURES.settings], ["mute", FEATURES.music]]) { const b = document.getElementById && document.getElementById(id); if (b && !on) b.hidden = true; } }
+
+// ---------- settings panel ----------
+function swatch(key, val, color, on, label) { return `<button class="sw ${on ? "on" : ""}" data-set="${key}:${val}" style="background:${color}" aria-label="${label}" aria-pressed="${on}"></button>`; }
+function opt(key, val, label, on) { return `<button class="opt" data-set="${key}:${val}" aria-pressed="${on}">${label}</button>`; }
+function settingsHTML() {
+  const l = me.look, o = lookOpts(l);
+  return `<div class="sheet" role="dialog" aria-label="Settings">
+    <div class="row" style="justify-content:space-between"><h2>Settings</h2><button id="close-set">Done</button></div>
+    <section class="sgroup"><span class="label">Your character</span>
+      <div class="me-prev"><svg viewBox="0 0 200 240" aria-hidden="true"><rect width="200" height="240" fill="${mix(o.hair, "#1A1238", .7)}"/>${character(o)}</svg>
+        <svg viewBox="0 0 200 240" aria-hidden="true"><rect width="200" height="240" fill="${mix(o.hair, "#1A1238", .8)}"/>${backView(o)}</svg></div>
+      <button id="rand-look">🎲 Random look</button>
+      <div class="label">Hair style</div><div class="opts">${STYLE_NAMES.map((s, i) => opt("s", i, s, l.s === i)).join("")}</div>
+      <div class="label">Hair color</div><div class="opts">${HAIR.map((c, i) => swatch("h", i, c, l.h === i, "Hair color " + (i + 1))).join("")}</div>
+      <div class="label">Hat</div><div class="opts">${HAT_NAMES.map((s, i) => opt("t", i, s, l.t === i)).join("")}</div>
+      <div class="label">Skin</div><div class="opts">${SKIN.map((c, i) => swatch("k", i, c, l.k === i, "Skin tone " + (i + 1))).join("")}</div>
+      <div class="label">Eyes</div><div class="opts">${EYES.map((c, i) => swatch("e", i, c, l.e === i, "Eye color " + (i + 1))).join("")}</div>
+      <div class="label">Outfit</div><div class="opts">${OUTFIT.map((c, i) => swatch("o", i, c, l.o === i, "Outfit color " + (i + 1))).join("")}</div>
+      <div class="opts">${opt("g", 0, "No glasses", l.g === 0)}${opt("g", 1, "Glasses", l.g === 1)}</div>
+    </section>
+    <section class="sgroup"><span class="label">Place</span><div class="opts">${Object.entries(BGS).map(([k, v]) => opt("bg", k, v, settings.bg === k)).join("")}</div></section>
+    <section class="sgroup"><span class="label">Music</span><div class="opts">${Object.entries(TRACKS).map(([k, v]) => opt("music", k, v, settings.music === k)).join("")}</div>
+      <label class="label" for="vol">Volume</label><input id="vol" type="range" min="0" max="1" step="0.05" value="${settings.vol}">
+      <p class="muted" style="font-size:.8rem">All music is original and made live in your browser.</p></section>
+    <section class="sgroup"><span class="label">Game view</span><div class="opts">${opt("view", "table", "Table", settings.view === "table")}${opt("view", "list", "List", settings.view === "list")}</div></section>
+  </div>`;
+}
+function renderSettings() {
+  const el = document.getElementById("settings"); if (!el) return;
+  el.hidden = !settingsOpen;
+  if (settingsOpen) { const sc = el.querySelector(".sheet") ? el.querySelector(".sheet").scrollTop : 0; el.innerHTML = settingsHTML(); el.querySelector(".sheet").scrollTop = sc; }
+  const mb = document.getElementById("mute"); if (mb) mb.textContent = settings.music === "off" ? "🔇" : "🎵";
+}
+function applySetting(key, val) {
+  if ("shkteog".includes(key) && key.length === 1) {
+    me.look = sanitizeLook({ ...me.look, [key]: +val }); LS.set("rc-look", me.look);
+    if (code) send({ type: "look", look: me.look });
+  } else if (key === "bg") { settings.bg = val; applyMusic(); }
+  else if (key === "music") { settings.music = val; if (val !== "off") settings.lastMusic = val; applyMusic(); }
+  else if (key === "view") settings.view = val;
+  saveSettings(); renderSettings(); render();
+}
 
 // ---------- rendering ----------
 let toastMsg = "", toastTimer = null;
@@ -543,14 +922,16 @@ function toast(m) { toastMsg = m; clearTimeout(toastTimer); toastTimer = setTime
 const nameOf = (st, pid) => { const r = (st.pl || []).find(p => p[0] === pid); return r ? r[1] : "Someone"; };
 const isBotPid = pid => /^bot/.test(pid);
 const pageLink = () => location.href.split("#")[0].split("?")[0];
+const viewToggle = () => `<div class="seg" role="group" aria-label="Game view"><button data-set="view:table" aria-pressed="${settings.view === "table"}">Table</button><button data-set="view:list" aria-pressed="${settings.view === "list"}">List</button></div>`;
 
 function viewHome() {
   const cur = LS.get("rc-current");
   const linked = (location.hash.match(/^#([A-Za-z]{4})$/) || [])[1];
+  const demo = [{ pid: me.pid, name: me.name || "You" }, { pid: "demo-a", name: "Mika" }, { pid: "demo-b", name: "Leo" }, { pid: "demo-c", name: "Sofía" }, { pid: "demo-d", name: "Jun" }];
   return `
+  <div class="stage">${tableScene(demo, null, false)}</div>
   <section class="card">
-    <div class="row" style="flex-wrap:nowrap;gap:12px">${cardBack().replace("<svg", '<svg class="mini" style="width:46px"')}
-      <p>A secret-team party game for 1–8 people, each on their own phone. Somewhere in the rack is a <b style="color:var(--core)">rogue core</b>. Find every clean key before someone cuts it.</p></div>
+    <p>A secret-team party game for 1–8 people, each on their own phone. Somewhere in the rack is a <b style="color:var(--core)">rogue core</b>. Find every clean key before someone cuts it.</p>
     ${typeof Peer === "undefined" ? `<p class="notice">The connection library didn't load. Check your internet and reload.</p>` : ""}
     <label class="label" for="name-in">Your name</label>
     <input id="name-in" maxlength="14" autocomplete="nickname" placeholder="e.g. Ameen" value="${esc(me.name)}">
@@ -558,6 +939,7 @@ function viewHome() {
     <div class="label">or join with a code</div>
     <div class="split"><input id="code-in" maxlength="4" autocapitalize="characters" autocomplete="off" placeholder="ABCD" value="${esc(linked ? linked.toUpperCase() : "")}"><button id="join">Join</button></div>
     ${cur ? `<button id="rejoin">Rejoin game ${esc(cur.code)}</button>` : ""}
+    ${FEATURES.settings ? '<button id="open-set2">⚙ Change my character, place and music</button>' : ""}
   </section>`;
 }
 function viewLobby() {
@@ -565,6 +947,7 @@ function viewLobby() {
   const startLabel = on < 3 ? `Start (adds ${3 - on} computer player${3 - on === 1 ? "" : "s"})` : `Start with ${on} players`;
   const link = pageLink() + "#" + code;
   return `
+  ${ps.length ? `<div class="stage">${tableScene(ps.filter(p => p.on), null, false)}</div>` : ""}
   <section class="card" style="text-align:center">
     <span class="label">Game code</span>
     <div class="bigcode">${esc(code)}</div>
@@ -574,7 +957,7 @@ function viewLobby() {
   ${hint ? `<p class="notice">${esc(hint)}</p>` : ""}
   <section class="card">
     <div class="row" style="justify-content:space-between"><h2>Players</h2><span class="chip">${on} / 8</span></div>
-    <ul class="players">${ps.map(p => `<li class="${p.on ? "" : "off"}"><span class="who-line">${avatar(p.pid, p.bot)}<span>${esc(p.name)}</span></span><span class="row">${p.host ? '<span class="chip gold">host</span>' : ""}${p.bot ? '<span class="chip">computer</span>' : ""}${p.pid === me.pid ? '<span class="chip">you</span>' : ""}${p.on ? "" : '<span class="chip">away</span>'}${isHost && p.bot ? `<button class="chip" data-unbot="${esc(p.pid)}" aria-label="Remove ${esc(p.name)}">remove</button>` : ""}</span></li>`).join("") || '<li class="muted">Connecting to the game…</li>'}</ul>
+    <ul class="players">${ps.map(p => `<li class="${p.on ? "" : "off"}"><span class="who-line">${avatar(p.pid)}<span>${esc(p.name)}</span></span><span class="row">${p.host ? '<span class="chip gold">host</span>' : ""}${p.bot ? '<span class="chip">computer</span>' : ""}${p.pid === me.pid ? '<span class="chip">you</span>' : ""}${p.on ? "" : '<span class="chip">away</span>'}${isHost && p.bot ? `<button class="chip" data-unbot="${esc(p.pid)}" aria-label="Remove ${esc(p.name)}">remove</button>` : ""}</span></li>`).join("") || '<li class="muted">Connecting to the game…</li>'}</ul>
     ${isHost && on < 8 ? `<button id="addbot">+ Add computer player</button>` : ""}
     ${isHost ? `<button class="primary" id="start" ${ok ? "" : "disabled"}>${ok ? startLabel : "Up to 8 players"}</button>
       <p class="muted" style="font-size:.85rem">Keep this page open: your phone runs the game for everyone.</p>`
@@ -586,6 +969,7 @@ function viewPlay(st) {
   const inGame = (st.pl || []).some(p => p[0] === me.pid), myTurn = st.ph === "play" && st.tp === me.pid;
   const roundSize = ROUND_SIZES[(st.rd || 1) - 1] || 2;
   const claims = {}; for (const [pid, c] of Object.entries(view.claims || {})) if (c && c.rd === st.rd) claims[pid] = c;
+  const lobbyBy = Object.fromEntries((view.lobby || []).map(p => [p.pid, p]));
   const away = new Set((view.lobby || []).filter(p => !p.on).map(p => p.pid));
   const ev = st.last ? `<p class="event"><b>${esc(nameOf(st, st.last.f))}</b> cut <b>${esc(nameOf(st, st.last.t))}</b>'s cable: <span style="color:${st.last.c === "K" ? "var(--key)" : st.last.c === "V" ? "var(--core)" : "var(--muted)"}">${NAMES[st.last.c]}</span></p>` : "";
   let secretPanel;
@@ -608,30 +992,37 @@ function viewPlay(st) {
         <button data-core="1" aria-pressed="${!!my.v}">I have the core</button></div>
     </section>`;
   } else secretPanel = `<p class="notice">This game started without you. You're watching.</p>`;
-  const turn = myTurn ? `<div class="turn mine">✂ You hold the cutter! Tap someone else's cable.</div>`
-    : `<div class="turn">${avatar(st.tp, isBotPid(st.tp))}<span><b>${esc(nameOf(st, st.tp))}</b> holds the cutter…</span></div>`;
-  const seats = (st.pl || []).map(([pid, name, cards]) => {
-    const cl = claims[pid];
-    return `<div class="seat ${pid === st.tp ? "cutter" : ""} ${pid === me.pid ? "me" : ""} ${away.has(pid) ? "off" : ""}">
-      <div class="who"><span class="who-line" style="gap:8px">${avatar(pid, isBotPid(pid))}<span class="nm">${esc(name)}${pid === me.pid ? " (you)" : ""}</span></span>${pid === st.tp ? '<span class="chip gold">✂</span>' : away.has(pid) ? '<span class="chip">away</span>' : ""}</div>
-      ${cl ? `<div class="row" style="gap:4px"><span class="chip key">says ${cl.k} key${cl.k === 1 ? "" : "s"}</span>${cl.v ? '<span class="chip core">says core</span>' : ""}</div>` : ""}
-      <div class="cables">${[...cards].map((c, i) => {
-        if (c !== ".") return `<span class="cc ${freshCable === pid + ":" + i ? "fresh" : ""}">${cardFace(c)}</span>`;
-        const can = myTurn && pid !== me.pid, pend = pending && pending.t === pid && pending.i === i;
-        return `<button class="cc ${can ? "can" : ""} ${pend ? "pending" : ""}" data-t="${esc(pid)}" data-i="${i}" ${can ? "" : "disabled"} aria-label="${esc(name)}'s cable ${i + 1}, face down">${cardBack()}</button>`;
-      }).join("")}</div>
-    </div>`;
-  }).join("");
+  const turn = myTurn ? `<div class="turn mine">✂ You hold the cutter! Tap someone else's card${settings.view === "table" ? " on the table" : ""}.</div>`
+    : `<div class="turn">${avatar(st.tp)}<span><b>${esc(nameOf(st, st.tp))}</b> holds the cutter…</span></div>`;
+  let board;
+  if (settings.view === "table") {
+    const seats = (st.pl || []).map(([pid, name, cards]) => ({ pid, name, cards, claim: claims[pid], bot: !!(lobbyBy[pid] && lobbyBy[pid].bot) }));
+    board = `<div class="stage">${tableScene(seats, st, myTurn)}</div>`;
+  } else {
+    board = `<section class="table">${(st.pl || []).map(([pid, name, cards]) => {
+      const cl = claims[pid];
+      return `<div class="seat ${pid === st.tp ? "cutter" : ""} ${pid === me.pid ? "me" : ""} ${away.has(pid) ? "off" : ""}">
+        <div class="who"><span class="who-line" style="gap:8px">${avatar(pid)}<span class="nm">${esc(name)}${pid === me.pid ? " (you)" : ""}</span></span>${pid === st.tp ? '<span class="chip gold">✂</span>' : away.has(pid) ? '<span class="chip">away</span>' : ""}</div>
+        ${cl ? `<div class="row" style="gap:4px"><span class="chip key">says ${cl.k} key${cl.k === 1 ? "" : "s"}</span>${cl.v ? '<span class="chip core">says core</span>' : ""}</div>` : ""}
+        <div class="cables">${[...cards].map((c, i) => {
+          if (c !== ".") return `<span class="cc ${freshCable === pid + ":" + i ? "fresh" : ""}">${cardFace(c)}</span>`;
+          const can = myTurn && pid !== me.pid, pend = pending && pending.t === pid && pending.i === i;
+          return `<button class="cc ${can ? "can" : ""} ${pend ? "pending" : ""}" data-t="${esc(pid)}" data-i="${i}" ${can ? "" : "disabled"} aria-label="${esc(name)}'s cable ${i + 1}, face down">${cardBack()}</button>`;
+        }).join("")}</div>
+      </div>`;
+    }).join("")}</section>`;
+  }
   return `
-  ${secretPanel}
+  ${turn}
+  ${ev}
+  <div class="row" style="justify-content:space-between"><span class="label">${esc(BGS[settings.bg])}</span>${viewToggle()}</div>
+  ${board}
   <section class="status">
     <div class="stat"><span class="label">Keys found</span><b>${st.kf} / ${st.need}</b><div class="keys">${Array.from({ length: st.need }, (_, k) => `<i class="${k < st.kf ? "on" : ""}"></i>`).join("")}</div></div>
     <div class="stat"><span class="label">Cuts this round</span><b>${st.cu} / ${st.need}</b></div>
     <div class="stat"><span class="label">Round</span><b>${st.rd} / 3</b></div>
   </section>
-  ${turn}
-  ${ev}
-  <section class="table">${seats}</section>
+  ${secretPanel}
   <button id="leave">Leave game</button>`;
 }
 function viewEnd(st) {
@@ -646,7 +1037,7 @@ function viewEnd(st) {
   </section>
   <section class="card">
     <h2>Who was who</h2>
-    <ul class="players">${(st.pl || []).map(([pid, name], k) => { const r = (st.ro || "")[k]; return `<li><span class="who-line">${avatar(pid, isBotPid(pid))}<span>${esc(name)}${pid === me.pid ? " (you)" : ""}</span></span><span class="chip ${r === "R" ? "core" : "key"}">${r === "R" ? "Rogue AI" : "Sysadmin"}</span></li>`; }).join("")}</ul>
+    <ul class="players">${(st.pl || []).map(([pid, name], k) => { const r = (st.ro || "")[k]; return `<li><span class="who-line">${avatar(pid)}<span>${esc(name)}${pid === me.pid ? " (you)" : ""}</span></span><span class="chip ${r === "R" ? "core" : "key"}">${r === "R" ? "Rogue AI" : "Sysadmin"}</span></li>`; }).join("")}</ul>
     ${isHost ? `<button class="primary" id="again">Play again</button><button id="lobby">Back to lobby</button>` : `<p class="muted">The host can start the next game.</p>`}
     <button id="leave">Leave</button>
   </section>`;
@@ -674,6 +1065,19 @@ function render() {
   if ($("#code-in") && keep.code != null) $("#code-in").value = keep.code;
   if (focusId && document.getElementById(focusId)) document.getElementById(focusId).focus();
 }
+// Settings and table-card taps.
+document.addEventListener("click", e => {
+  const s = e.target.closest("[data-set]"); if (s) { const [k, v] = s.dataset.set.split(":"); applySetting(k, v); return; }
+  if (e.target.closest("#gear") || e.target.closest("#open-set2")) { settingsOpen = true; renderSettings(); return; }
+  if (e.target.closest("#close-set") || e.target.id === "settings") { settingsOpen = false; renderSettings(); return; }
+  if (e.target.closest("#rand-look")) { me.look = randomLook(); LS.set("rc-look", me.look); if (code) send({ type: "look", look: me.look }); renderSettings(); render(); return; }
+  if (e.target.closest("#mute")) { if (settings.music === "off") settings.music = settings.lastMusic || "match"; else { settings.lastMusic = settings.music; settings.music = "off"; } saveSettings(); applyMusic(); renderSettings(); return; }
+  const tc = e.target.closest(".tcard.can");
+  if (tc) { pending = { t: tc.dataset.t, i: +tc.dataset.i }; send({ type: "act", n: Date.now(), t: tc.dataset.t, i: +tc.dataset.i }); render(); }
+});
+document.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest(".tcard.can")) { e.preventDefault(); e.target.closest(".tcard.can").dispatchEvent(new MouseEvent("click", { bubbles: true })); } });
+document.addEventListener("input", e => { if (e.target.id === "vol") { settings.vol = +e.target.value; saveSettings(); applyMusic(); } });
+document.addEventListener("visibilitychange", () => { if (document.hidden) Music.pause(); else Music.resume(); });
 
 // ---------- input ----------
 function saveName() { const v = (($("#name-in") && $("#name-in").value) || me.name).trim(); if (!v) { toast("Type your name first."); return false; } me.name = v.slice(0, 14); LS.set("rc-name", me.name); return true; }
