@@ -3,132 +3,169 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0B0F13">
+<meta name="theme-color" content="#120C26">
 <title>Rogue Core</title>
 <meta name="description" content="A free secret-team party game for 3 to 8 players, each on their own phone.">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap">
 <style>
-/* Layout: one phone-width column: your secret panel on top, the shared table of players and cables below.
-   Deliberately a single dark "server room" look. */
+/* Layout: one phone-width column. Anime trading-card look: night-sky violet ground, glossy panels,
+   illustrated role cards and cable cards. Deliberately a single dark look. */
 :root {
-  --bg: #0B0F13; --panel: #131A21; --panel2: #1A232C; --line: #26323D; --fg: #E6EDF3; --muted: #8A99A8;
-  --amber: #F5B83D; --key: #3DDC97; --dead: #5B6B7A; --core: #FF4D5E; --sys: #59A8FF;
-  --display: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
-  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  --bg: #120C26; --bg2: #1E1442; --panel: rgba(36,24,74,.78); --panel2: #2B1E5A; --line: rgba(255,255,255,.13);
+  --fg: #F7F2FF; --muted: #B9ADDB; --pink: #FF5FA2; --cyan: #4FE3FF; --gold: #FFD166;
+  --key: #5CF2B0; --dead: #8E9BB8; --core: #FF3D6E; --sys: #5AB6FF;
+  --display: "Dela Gothic One", "Arial Black", system-ui, sans-serif;
+  --body: "M PLUS Rounded 1c", "Segoe UI", system-ui, sans-serif;
   color-scheme: dark;
 }
 * { box-sizing: border-box }
-html, body { background: var(--bg); margin: 0 }
-body { color: var(--fg); font: 15px/1.5 var(--body); -webkit-tap-highlight-color: transparent }
+html { background: var(--bg) }
+body { margin: 0; color: var(--fg); font: 500 15px/1.5 var(--body); -webkit-tap-highlight-color: transparent; min-height: 100vh;
+  background:
+    radial-gradient(1px 1px at 12% 18%, #fff8 50%, transparent 51%), radial-gradient(1px 1px at 72% 9%, #fff7 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 85% 42%, #fff6 50%, transparent 51%), radial-gradient(1px 1px at 33% 64%, #fff5 50%, transparent 51%),
+    radial-gradient(1px 1px at 58% 82%, #fff6 50%, transparent 51%), radial-gradient(1.5px 1.5px at 8% 90%, #fff5 50%, transparent 51%),
+    radial-gradient(60% 40% at 0% 0%, rgba(255,95,162,.28), transparent 70%),
+    radial-gradient(60% 45% at 100% 100%, rgba(79,227,255,.22), transparent 70%),
+    linear-gradient(180deg, var(--bg2), var(--bg) 60%);
+  background-attachment: fixed }
+body.shake { animation: shake .45s linear }
+@keyframes shake { 20% { transform: translate(-6px, 3px) } 40% { transform: translate(5px, -4px) } 60% { transform: translate(-4px, -2px) } 80% { transform: translate(3px, 3px) } }
 .wrap { max-width: 560px; margin: 0 auto; padding-block: max(20px, env(safe-area-inset-top, 0px)) 48px;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
   display: grid; gap: 16px }
-h1, h2, h3 { font-family: var(--display); margin: 0; line-height: 1.1; text-wrap: balance }
-h1 { font-size: 2.2rem; letter-spacing: 0.02em }
-h1 span { color: var(--core) }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; margin: 0; line-height: 1.1; text-wrap: balance }
+.logo { display: grid; gap: 2px }
+.logo h1 { font-size: 2.3rem; letter-spacing: .02em; background: linear-gradient(180deg, #FFFFFF 10%, #FFC2E0 55%, var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 2px 0 #5A1E6E) drop-shadow(0 0 14px rgba(255,95,162,.45)) }
+.logo h1 span { background: linear-gradient(180deg, #FFF 10%, #9FF1FF 55%, var(--cyan)); -webkit-background-clip: text; background-clip: text }
+.logo small { font-size: .78rem; letter-spacing: .4em; color: var(--gold) }
 h2 { font-size: 1.25rem }
 p { margin: 0 }
 .muted { color: var(--muted) }
-.label { font: 500 0.7rem/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted) }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 12px }
+.label { font: 800 0.68rem/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted) }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: grid; gap: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08); backdrop-filter: blur(6px) }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
-input { font: 500 1rem var(--body); color: var(--fg); background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 12px; width: 100%; min-width: 0 }
-input:focus { outline: 2px solid var(--amber); outline-offset: 1px }
-#code-in { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.3em; text-align: center }
-button { font: 600 0.95rem var(--body); color: var(--fg); background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; cursor: pointer; touch-action: manipulation }
-button:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px }
-button.primary { background: var(--amber); border-color: var(--amber); color: #1A1204 }
+input { font: 700 1rem var(--body); color: var(--fg); background: rgba(10,6,24,.55); border: 1px solid var(--line); border-radius: 12px; padding: 12px; width: 100%; min-width: 0 }
+input:focus { outline: 2px solid var(--pink); outline-offset: 1px }
+#code-in { text-transform: uppercase; letter-spacing: .3em; text-align: center; font-family: var(--display) }
+button { font: 800 0.95rem var(--body); color: var(--fg); background: rgba(255,255,255,.07); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; cursor: pointer; touch-action: manipulation; transition: transform .1s }
+button:active { transform: scale(.97) }
+button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px }
+button.primary { background: linear-gradient(180deg, #FF8CC0, var(--pink)); border-color: #FFB3D6; color: #3A0620; box-shadow: 0 4px 0 #A3205E, 0 0 18px rgba(255,95,162,.35) }
 button:disabled { opacity: .45; cursor: default }
 .split { display: grid; grid-template-columns: 1fr auto; gap: 8px }
-.bigcode { font: 700 2.6rem/1 var(--mono); letter-spacing: 0.25em; color: var(--amber) }
-.notice { border-left: 3px solid var(--amber); padding: 8px 12px; background: var(--panel2); border-radius: 0 8px 8px 0; font-size: 0.92rem }
+.bigcode { font: 400 2.8rem/1 var(--display); letter-spacing: .22em; color: var(--gold); text-shadow: 0 3px 0 #7A4A00, 0 0 18px rgba(255,209,102,.4) }
+.notice { border-left: 3px solid var(--gold); padding: 8px 12px; background: rgba(255,209,102,.08); border-radius: 0 10px 10px 0; font-size: .92rem }
 .players { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px }
-.players li { display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; background: var(--panel2); border-radius: 8px }
+.players li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 10px 6px 6px; background: rgba(255,255,255,.05); border-radius: 14px }
 .players li.off { opacity: .5 }
-.chip { font: 500 0.72rem/1 var(--mono); padding: 4px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap }
-.chip.amber { color: var(--amber); border-color: var(--amber) }
+.who-line { display: flex; align-items: center; gap: 10px; min-width: 0 }
+.ava { width: 40px; height: 40px; border-radius: 50%; flex: none; border: 2px solid rgba(255,255,255,.25); background: #2B1E5A; display: block }
+.chip { font: 800 .7rem/1 var(--body); padding: 5px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; background: rgba(0,0,0,.2) }
+.chip.gold { color: var(--gold); border-color: var(--gold) }
 .chip.key { color: var(--key); border-color: var(--key) }
 .chip.core { color: var(--core); border-color: var(--core) }
+button.chip { padding: 5px 8px }
 .share { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center }
-.share code { font: 500 0.8rem var(--mono); color: var(--muted); overflow-wrap: anywhere; text-align: left }
+.share code { font: 600 .78rem ui-monospace, monospace; color: var(--muted); overflow-wrap: anywhere; text-align: left }
 
 .status { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px }
-.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px; display: grid; gap: 4px }
-.stat b { font: 700 1.3rem/1 var(--display); font-variant-numeric: tabular-nums }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 10px; display: grid; gap: 4px }
+.stat b { font: 400 1.3rem/1 var(--display); font-variant-numeric: tabular-nums }
 .keys { display: flex; gap: 3px; flex-wrap: wrap }
-.keys i { width: 10px; height: 10px; border-radius: 2px; background: var(--line) }
-.keys i.on { background: var(--key) }
-.turn { padding: 12px 14px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); font-weight: 500 }
-.turn.mine { border-color: var(--amber); color: var(--amber); animation: pulse 1.4s ease-in-out infinite }
-@keyframes pulse { 50% { box-shadow: 0 0 0 4px rgba(245,184,61,.15) } }
-.event { font: 500 0.9rem var(--mono); color: var(--muted) }
+.keys i { width: 11px; height: 11px; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); background: rgba(255,255,255,.18) }
+.keys i.on { background: var(--key); filter: drop-shadow(0 0 4px var(--key)) }
+.turn { padding: 12px 14px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); font-weight: 700; display: flex; gap: 10px; align-items: center }
+.turn.mine { border-color: var(--gold); color: var(--gold); background: linear-gradient(90deg, rgba(255,209,102,.16), rgba(255,95,162,.1)); animation: pulse 1.4s ease-in-out infinite }
+@keyframes pulse { 50% { box-shadow: 0 0 0 5px rgba(255,209,102,.14) } }
+.event { font-weight: 700; color: var(--muted); text-align: center }
 .event b { color: var(--fg) }
 
-.peek { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; min-height: 112px; display: grid; place-items: center; text-align: center; border-radius: 10px;
-  background: repeating-linear-gradient(135deg, var(--panel2) 0 10px, #161E26 10px 20px); border: 1px dashed var(--line); padding: 14px; cursor: pointer; touch-action: none }
-.peek.open { background: var(--panel2); border-style: solid }
-.peek.open.sys { border-color: var(--sys) }
-.peek.open.rogue { border-color: var(--core) }
-.role { font: 700 1.5rem var(--display) }
-.role.sys { color: var(--sys) }
-.role.rogue { color: var(--core) }
+/* secret: the illustrated role card */
+.peek { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; border-radius: 16px; cursor: pointer; touch-action: none; position: relative; overflow: hidden;
+  display: grid; place-items: center; min-height: 150px; padding: 14px; text-align: center;
+  background: repeating-linear-gradient(135deg, rgba(255,95,162,.12) 0 12px, rgba(79,227,255,.08) 12px 24px), #1A1238; border: 2px dashed rgba(255,255,255,.2) }
+.peek.open { padding: 0; border: 0; background: none; min-height: 0 }
+.rolecard { display: grid; grid-template-columns: minmax(0, 150px) minmax(0, 1fr); gap: 14px; align-items: center; text-align: left; width: 100%; padding: 10px; border-radius: 16px; background: rgba(0,0,0,.25) }
+.rolecard svg { width: 100%; height: auto; border-radius: 12px; display: block; box-shadow: 0 6px 20px rgba(0,0,0,.4) }
+.rolecard .rn { font: 400 1.35rem var(--display) }
+.rolecard.sys .rn { color: var(--sys) } .rolecard.rogue .rn { color: var(--core) }
+.hand { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px }
 .claims { display: flex; gap: 6px; flex-wrap: wrap }
-.claims button { padding: 8px 12px; font-size: 0.85rem }
-.claims button[aria-pressed="true"] { border-color: var(--amber); color: var(--amber) }
+.claims button { padding: 8px 12px; font-size: .85rem; border-radius: 999px }
+.claims button[aria-pressed="true"] { border-color: var(--gold); color: var(--gold); background: rgba(255,209,102,.12) }
 
+/* table of seats and cable cards */
 .table { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px }
-.seat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px; display: grid; gap: 8px; min-width: 0 }
-.seat.cutter { border-color: var(--amber) }
-.seat.me { background: #121B24 }
+.seat { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 10px; display: grid; gap: 8px; min-width: 0 }
+.seat.cutter { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 0 22px rgba(255,209,102,.25) }
+.seat.me { background: linear-gradient(180deg, rgba(90,182,255,.14), var(--panel)) }
 .seat.off { opacity: .55 }
 .seat .who { display: flex; justify-content: space-between; gap: 6px; align-items: center; min-width: 0 }
-.seat .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
-.cables { display: flex; gap: 6px; flex-wrap: wrap }
-.cable { width: 40px; height: 54px; padding: 0; border-radius: 6px; border: 1px solid var(--line); position: relative;
-  background: linear-gradient(180deg, #1F2A35, #161E26); font: 700 0.62rem var(--mono); letter-spacing: 0.04em }
-.cable::before { content: ""; position: absolute; left: 50%; top: 6px; bottom: 6px; width: 4px; transform: translateX(-50%); border-radius: 2px; background: #34424F }
-.cable.can { border-color: var(--amber) }
-.cable.can::before { background: var(--amber) }
-.cable.pending { animation: pulse 0.6s infinite }
-.cable.K, .cable.D, .cable.V { display: grid; place-items: center }
-.cable.K { background: rgba(61,220,151,.15); border-color: var(--key); color: var(--key) }
-.cable.D { background: rgba(91,107,122,.18); border-color: var(--dead); color: var(--muted) }
-.cable.V { background: rgba(255,77,94,.18); border-color: var(--core); color: var(--core) }
-.cable.K::before, .cable.D::before, .cable.V::before { display: none }
-.cable.fresh { animation: flip .5s ease }
-@keyframes flip { from { transform: rotateY(90deg) } to { transform: none } }
+.seat .ava { width: 32px; height: 32px }
+.seat .nm { font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0 }
+.cables { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px }
+.cc { padding: 0; border: 0; background: none; border-radius: 7px; aspect-ratio: 60 / 84; width: 100%; display: block; position: relative }
+.cc svg { width: 100%; height: 100%; display: block }
+.cc.can { animation: bob 1.6s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(255,95,162,.8)) }
+.cc.can:nth-child(2) { animation-delay: .15s } .cc.can:nth-child(3) { animation-delay: .3s } .cc.can:nth-child(4) { animation-delay: .45s }
+@keyframes bob { 50% { transform: translateY(-4px) } }
+.cc.pending { animation: pulse .6s infinite }
+.cc.fresh { animation: flip .6s cubic-bezier(.2,.8,.3,1.2) }
+@keyframes flip { from { transform: rotateY(180deg) scale(1.2) } to { transform: none } }
+.mini { width: 30px; display: inline-block; vertical-align: middle }
 
-.win { text-align: center; padding: 22px 16px }
-.win h2 { font-size: 1.8rem }
+/* manga burst on each cut */
+#fx { position: fixed; inset: 0; pointer-events: none; display: grid; place-items: center; z-index: 20 }
+#fx .burst { opacity: 0; transform: scale(.4) rotate(-8deg) }
+#fx.show .burst { animation: pop .95s ease-out forwards }
+@keyframes pop { 0% { opacity: 0; transform: scale(.4) rotate(-8deg) } 18% { opacity: 1; transform: scale(1.08) rotate(-4deg) } 70% { opacity: 1; transform: scale(1) rotate(-4deg) } 100% { opacity: 0; transform: scale(1.15) rotate(-4deg) } }
+#fx .burst svg { width: min(78vw, 360px); height: auto }
+
+.win { text-align: center; padding: 18px 14px; overflow: hidden; position: relative }
+.win h2 { font-size: 2rem; text-shadow: 0 3px 0 rgba(0,0,0,.4) }
 .win.sys h2 { color: var(--sys) } .win.rogue h2 { color: var(--core) }
-details { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px }
-summary { cursor: pointer; font-weight: 600 }
-details ul { margin: 10px 0 0; padding-left: 1.1em; display: grid; gap: 6px; color: var(--muted) }
-details b { color: var(--fg) }
-@media (prefers-reduced-motion: reduce) { .turn.mine, .cable.pending, .cable.fresh { animation: none } }
+.win svg.port { width: min(62%, 220px); height: auto; border-radius: 14px; margin: 6px auto; display: block; box-shadow: 0 10px 30px rgba(0,0,0,.45) }
+
+/* rules */
+details.rules { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 12px 16px }
+details.rules summary { cursor: pointer; font: 400 1.05rem var(--display) }
+.rules .teams { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px }
+.rules .teams div { display: grid; gap: 6px; text-align: center; font-size: .85rem; color: var(--muted) }
+.rules .teams svg { width: 100%; height: auto; border-radius: 12px }
+.rules .deck { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; text-align: center; font-size: .82rem; color: var(--muted) }
+.rules .deck svg { width: 64px; height: auto; display: block; margin: 0 auto 4px }
+.rules ol { margin: 14px 0 0; padding-left: 1.2em; display: grid; gap: 8px; color: var(--muted) }
+.rules b { color: var(--fg) }
+@media (prefers-reduced-motion: reduce) { .turn.mine, .cc.can, .cc.pending, .cc.fresh, body.shake { animation: none } #fx { display: none } }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <linearGradient id="gBack" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4A2391"/><stop offset=".55" stop-color="#2A1663"/><stop offset="1" stop-color="#120B36"/></linearGradient>
+  <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF1B8"/><stop offset=".5" stop-color="#FFD166"/><stop offset="1" stop-color="#C98B2B"/></linearGradient>
+  <linearGradient id="gKey" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B8A6E"/><stop offset="1" stop-color="#0A2E3A"/></linearGradient>
+  <linearGradient id="gDead" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A5672"/><stop offset="1" stop-color="#1E2433"/></linearGradient>
+  <linearGradient id="gCore" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A3133F"/><stop offset="1" stop-color="#2A0716"/></linearGradient>
+  <radialGradient id="gGlowK"><stop offset="0" stop-color="#9BFFE0" stop-opacity=".9"/><stop offset="1" stop-color="#5CF2B0" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gGlowV"><stop offset="0" stop-color="#FF9AB5" stop-opacity=".95"/><stop offset="1" stop-color="#FF3D6E" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gOrb" cx=".38" cy=".35"><stop offset="0" stop-color="#FF7A9C"/><stop offset=".55" stop-color="#B3143F"/><stop offset="1" stop-color="#3A0515"/></radialGradient>
+  <linearGradient id="gSys" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FD3FF"/><stop offset=".5" stop-color="#3A62D9"/><stop offset="1" stop-color="#1B1460"/></linearGradient>
+  <linearGradient id="gRogue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF8AA8"/><stop offset=".45" stop-color="#9B1240"/><stop offset="1" stop-color="#22051A"/></linearGradient>
+  <pattern id="pDots" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.1" fill="#FFFFFF" opacity=".14"/></pattern>
+</defs></svg>
 <div class="wrap">
-  <header class="row" style="justify-content:space-between">
-    <h1>ROGUE <span>CORE</span></h1>
+  <header class="row" style="justify-content:space-between;align-items:flex-end">
+    <div class="logo"><h1>ROGUE <span>CORE</span></h1><small>ローグ・コア</small></div>
     <span class="label" id="conn">Offline</span>
   </header>
   <main id="app" style="display:grid;gap:16px"></main>
-  <details>
-    <summary>How to play</summary>
-    <ul>
-      <li>1 to 8 people, each on their own phone. Computer players fill the table up to 3, and the host can add more. Talking, bluffing and accusing happen out loud.</li>
-      <li>Everyone is secretly a <b>Sysadmin</b> or a <b>Rogue AI</b>. Press and hold your secret panel to see your team.</li>
-      <li>Each round everyone gets face-down cables: <b>Clean keys</b>, <b>Dead cables</b> and one <b>Rogue core</b> somewhere. You see only how many of each you hold, not which is which.</li>
-      <li>The player with the cutter taps someone else's cable to cut it. Whoever was cut takes the cutter next.</li>
-      <li>Each round has one cut per player. Then the uncut cables are reshuffled and dealt again, one fewer each. There are 3 rounds.</li>
-      <li><b>Sysadmins win</b> when every clean key is found. <b>Rogue AIs win</b> if the rogue core is cut, or if 3 rounds pass first.</li>
-    </ul>
-  </details>
+  <details class="rules" id="rules"><summary>How to play</summary><div id="rules-body"></div></details>
   <p class="muted" style="font-size:.8rem;text-align:center">Phones connect directly to each other. It works best when everyone is on the same Wi-Fi.</p>
 </div>
+<div id="fx" aria-hidden="true"></div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
@@ -341,10 +378,170 @@ function leaveGame() {
 }
 function backToLobby() { H = null; for (const p of players.values()) p.claim = null; broadcast(); }
 
+// ---------- art: original anime-style characters and cards, drawn as SVG ----------
+const hash = s => { let h = 2166136261; for (const c of String(s)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
+function mix(a, b, t) {
+  const p = x => [1, 3, 5].map(i => parseInt(x.slice(i, i + 2), 16));
+  const A = p(a), B = p(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join("");
+}
+const HAIR = ["#FF6FA8", "#5AA9FF", "#FFD166", "#B28DFF", "#5CF2B0", "#2E2440", "#FF8A5C", "#E9E4FF"];
+const EYES = ["#3FD0FF", "#B06BFF", "#FF7A59", "#46D18A", "#FFC23D", "#FF5FA2"];
+const SKIN = ["#FFE6D5", "#F8D0B0", "#E2AA80", "#B97C55", "#8A5638"];
+const SHIRT = ["#3A3F8F", "#7A2E6E", "#1F6F78", "#5B3FA0", "#2F4A7A", "#8A3B3B"];
+function eye(cx, iris, left, android) {
+  const s = left ? 1 : -1, cy = 116;
+  return `<ellipse cx="${cx}" cy="${cy}" rx="11.5" ry="13.5" fill="#fff"/>
+    <ellipse cx="${cx}" cy="${cy + 2}" rx="9.5" ry="11.8" fill="${iris}"/>
+    <ellipse cx="${cx}" cy="${cy + 7}" rx="7" ry="5.5" fill="#fff" opacity=".28"/>
+    <ellipse cx="${cx}" cy="${cy + 2}" rx="${android ? 1.8 : 4.6}" ry="6.3" fill="#1A1030"/>
+    <circle cx="${cx + 3.6}" cy="${cy - 4}" r="3.4" fill="#fff"/><circle cx="${cx - 3.4}" cy="${cy + 7}" r="1.6" fill="#fff"/>
+    <path d="M${cx - 13 * s} ${cy - 3} Q${cx} ${cy - 18} ${cx + 13 * s} ${cy - 7}" stroke="#1A1030" stroke-width="3.8" fill="none" stroke-linecap="round"/>
+    <path d="M${cx + 12 * s} ${cy - 7} l${4 * s} -3" stroke="#1A1030" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M${cx - 9 * s} ${cy - 23} Q${cx} ${cy - 27} ${cx + 9 * s} ${cy - 22}" stroke="${android ? "#E9E4FF" : "#2A1A20"}" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+}
+// One character drawing, framed as a portrait (viewBox 0 0 200 240) or cropped to a round avatar.
+function character(o) {
+  const sk = o.skin, skS = mix(sk, "#7A3A4A", .22), hr = o.hair, hrS = mix(hr, "#100820", .35);
+  const back = o.style === "long" ? `<path d="M56 96 Q48 172 66 206 L134 206 Q152 172 144 96Z" fill="${hrS}"/>`
+    : o.style === "bob" ? `<path d="M56 96 Q52 152 70 160 L130 160 Q148 152 144 96Z" fill="${hrS}"/>` : "";
+  const bangs = o.style === "bob"
+    ? `<path d="M60 106 Q52 54 100 48 Q148 54 140 106 Q126 84 100 88 Q74 84 60 106Z" fill="${hr}"/>`
+    : `<path d="M60 106 Q52 54 100 48 Q148 54 140 106 L133 88 L127 106 L119 80 L110 101 L101 75 L92 101 L83 80 L75 106 L68 88Z" fill="${hr}"/>`;
+  const acc = o.acc === "headset"
+    ? `<path d="M57 104 Q58 36 100 34 Q142 36 143 104" stroke="#241D3D" stroke-width="6" fill="none"/>
+       <rect x="49" y="94" width="15" height="24" rx="7" fill="#3A3366" stroke="#4FE3FF" stroke-width="1.6"/><rect x="136" y="94" width="15" height="24" rx="7" fill="#3A3366" stroke="#4FE3FF" stroke-width="1.6"/>
+       <path d="M56 117 Q60 152 86 151" stroke="#241D3D" stroke-width="3.2" fill="none"/><circle cx="88" cy="151" r="4.2" fill="#4FE3FF"/>`
+    : o.acc === "android"
+    ? `<rect x="52" y="98" width="13" height="22" rx="3" fill="#ECEAFF" stroke="#9A93C9"/><circle cx="58.5" cy="109" r="2.6" fill="#FF3D6E"/>
+       <rect x="135" y="98" width="13" height="22" rx="3" fill="#ECEAFF" stroke="#9A93C9"/><circle cx="141.5" cy="109" r="2.6" fill="#FF3D6E"/>
+       <path d="M122 132 h8 v6 h7 M124 140 h5" stroke="#FF3D6E" stroke-width="1.6" fill="none"/>` : "";
+  const mouth = o.mood === "smirk" ? `<path d="M92 144 Q103 147 110 139" stroke="#8A2A44" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
+    : `<path d="M92 142 Q100 150 108 142" stroke="#8A3A4A" stroke-width="2.4" fill="#C25070" stroke-linecap="round"/>`;
+  return `${back}
+    <path d="M24 240 Q34 184 100 176 Q166 184 176 240Z" fill="${o.shirt}"/><path d="M24 240 Q34 184 100 176 L100 240Z" fill="#000" opacity=".12"/>
+    <path d="M86 178 L100 198 L114 178" fill="${mix(o.shirt, "#FFFFFF", .25)}"/>
+    <path d="M88 148 L88 182 Q100 189 112 182 L112 148Z" fill="${skS}"/>
+    <ellipse cx="63" cy="110" rx="5.5" ry="9" fill="${skS}"/><ellipse cx="137" cy="110" rx="5.5" ry="9" fill="${skS}"/>
+    <path d="M64 96 Q64 146 100 168 Q136 146 136 96 Q136 62 100 60 Q64 62 64 96Z" fill="${sk}"/>
+    <ellipse cx="78" cy="136" rx="8.5" ry="4" fill="#FF7FA8" opacity=".45"/><ellipse cx="122" cy="136" rx="8.5" ry="4" fill="#FF7FA8" opacity=".45"/>
+    ${eye(82, o.eye, true, o.acc === "android")}${eye(118, o.eye, false, o.acc === "android")}
+    <path d="M100 127 l-2 4" stroke="${skS}" stroke-width="1.6" stroke-linecap="round"/>
+    ${mouth}
+    ${bangs}
+    <path d="M62 102 Q57 132 66 154 L73 112Z" fill="${hr}"/><path d="M138 102 Q143 132 134 154 L127 112Z" fill="${hr}"/>
+    <path d="M74 66 Q100 54 126 66" stroke="#fff" stroke-width="3.2" fill="none" opacity=".38" stroke-linecap="round"/>
+    ${acc}`;
+}
+function robot(seed) {
+  const c = EYES[seed % EYES.length];
+  return `<path d="M24 240 Q34 184 100 176 Q166 184 176 240Z" fill="#454B6B"/>
+    <rect x="94" y="146" width="12" height="34" fill="#6B7194"/>
+    <line x1="100" y1="48" x2="100" y2="30" stroke="#B9BEDB" stroke-width="4"/><circle cx="100" cy="27" r="6" fill="${c}"/>
+    <rect x="58" y="50" width="84" height="102" rx="26" fill="#D9DCEF"/><rect x="58" y="50" width="84" height="102" rx="26" fill="none" stroke="#8A90B8" stroke-width="3"/>
+    <rect x="66" y="90" width="68" height="34" rx="14" fill="#1A1438"/>
+    <circle cx="84" cy="107" r="7" fill="${c}"/><circle cx="116" cy="107" r="7" fill="${c}"/>
+    <circle cx="86" cy="104" r="2.2" fill="#fff"/><circle cx="118" cy="104" r="2.2" fill="#fff"/>
+    <path d="M88 136 Q100 142 112 136" stroke="#6B7194" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="72" cy="132" rx="6" ry="3" fill="#FF7FA8" opacity=".5"/><ellipse cx="128" cy="132" rx="6" ry="3" fill="#FF7FA8" opacity=".5"/>`;
+}
+function avatar(pid, bot, cls = "ava") {
+  const h = hash(pid), bg = mix(HAIR[(h >>> 3) % HAIR.length], "#1A1238", .7);
+  const inner = bot ? robot(h) : character({ hair: HAIR[h % HAIR.length], eye: EYES[(h >>> 5) % EYES.length], skin: SKIN[(h >>> 9) % SKIN.length],
+    shirt: SHIRT[(h >>> 13) % SHIRT.length], style: ["spiky", "bob", "long"][(h >>> 17) % 3], mood: "smile" });
+  return `<svg class="${cls}" viewBox="42 38 116 116" aria-hidden="true"><rect x="0" y="0" width="200" height="240" fill="${bg}"/>${inner}</svg>`;
+}
+let LINES = ""; for (let k = 0; k < 36; k++) { const a = k / 36 * Math.PI * 2, r1 = 70 + (k % 3) * 12; LINES += `M${(100 + Math.cos(a) * r1).toFixed(1)} ${(110 + Math.sin(a) * r1).toFixed(1)} L${(100 + Math.cos(a) * 190).toFixed(1)} ${(110 + Math.sin(a) * 190).toFixed(1)} `; }
+const SPARK = (x, y, s, c) => `<path d="M${x} ${y - s} Q${x + s * .18} ${y - s * .18} ${x + s} ${y} Q${x + s * .18} ${y + s * .18} ${x} ${y + s} Q${x - s * .18} ${y + s * .18} ${x - s} ${y} Q${x - s * .18} ${y - s * .18} ${x} ${y - s}Z" fill="${c}"/>`;
+// Team portraits: the Sysadmin wears a headset; the Rogue AI is an android with a slit-pupil red gaze.
+function portrait(team, cls = "") {
+  const sys = team !== "R";
+  const ch = sys ? character({ hair: "#4A7CFF", eye: "#3FD0FF", skin: "#FFE3CF", shirt: "#2D3A7A", style: "spiky", acc: "headset", mood: "smile" })
+                 : character({ hair: "#EDEBFF", eye: "#FF3D6E", skin: "#F4E4F2", shirt: "#2A1030", style: "long", acc: "android", mood: "smirk" });
+  const fx = sys
+    ? `<rect x="10" y="40" width="40" height="28" rx="4" fill="#4FE3FF" opacity=".18" stroke="#4FE3FF" stroke-opacity=".6"/><path d="M15 50 h26 M15 56 h18 M15 62 h22" stroke="#9FF1FF" stroke-opacity=".7"/>
+       <rect x="150" y="56" width="40" height="30" rx="4" fill="#4FE3FF" opacity=".18" stroke="#4FE3FF" stroke-opacity=".6"/><path d="M155 76 l8 -8 l7 5 l12 -12" stroke="#9FF1FF" fill="none"/>
+       ${SPARK(30, 150, 7, "#FFF6C2")}${SPARK(172, 120, 5, "#fff")}${SPARK(160, 30, 6, "#FFF6C2")}`
+    : `<rect x="0" y="70" width="200" height="5" fill="#4FE3FF" opacity=".35"/><rect x="30" y="128" width="140" height="3" fill="#FF3D6E" opacity=".55"/><rect x="0" y="160" width="90" height="4" fill="#4FE3FF" opacity=".3"/>
+       <text x="16" y="44" font-family="monospace" font-size="11" fill="#FF8AA8" opacity=".7">01101</text><text x="150" y="190" font-family="monospace" font-size="11" fill="#FF8AA8" opacity=".6">ERR</text>`;
+  return `<svg class="${cls}" viewBox="0 0 200 240" role="img" aria-label="${sys ? "Sysadmin" : "Rogue AI"} card">
+    <rect width="200" height="240" fill="url(#${sys ? "gSys" : "gRogue"})"/><path d="${LINES}" stroke="#fff" stroke-opacity=".12" stroke-width="2"/>
+    <rect width="200" height="240" fill="url(#pDots)"/>${fx}${ch}
+    <rect x="0" y="196" width="200" height="44" fill="#0B0620" opacity=".72"/>
+    <text x="100" y="220" text-anchor="middle" font-family="Dela Gothic One, Arial Black, sans-serif" font-size="19" fill="${sys ? "#9FDCFF" : "#FF8AA8"}">${sys ? "SYSADMIN" : "ROGUE AI"}</text>
+    <text x="100" y="235" text-anchor="middle" font-family="M PLUS Rounded 1c, sans-serif" font-size="10" fill="#fff" opacity=".8">${sys ? "システム管理者" : "暴走AI"}</text>
+    <rect x="2" y="2" width="196" height="236" rx="12" fill="none" stroke="url(#gGold)" stroke-width="4"/></svg>`;
+}
+// Cable cards, viewBox 0 0 60 84.
+const FRAME = `<rect x="1.5" y="1.5" width="57" height="81" rx="7" fill="none" stroke="url(#gGold)" stroke-width="2.5"/>`;
+function cardBack() {
+  return `<svg viewBox="0 0 60 84" aria-hidden="true"><rect x="1" y="1" width="58" height="82" rx="7" fill="url(#gBack)"/>
+    <rect x="6" y="6" width="48" height="72" rx="4" fill="url(#pDots)" stroke="#FFD166" stroke-opacity=".35"/>
+    <path d="M30 24 L34 37 L47 42 L34 47 L30 60 L26 47 L13 42 L26 37Z" fill="url(#gGold)"/>
+    <circle cx="30" cy="42" r="6.5" fill="#1A1240" stroke="#FF5FA2" stroke-width="1.6"/><circle cx="30" cy="42" r="2.2" fill="#4FE3FF"/>
+    ${SPARK(12, 14, 3, "#FFE7A3")}${SPARK(48, 70, 3, "#FFE7A3")}${FRAME}</svg>`;
+}
+function cardFace(c) {
+  const lab = (t, col) => `<rect x="6" y="66" width="48" height="13" rx="4" fill="#0B0620" opacity=".55"/><text x="30" y="76" text-anchor="middle" font-family="Dela Gothic One, Arial Black, sans-serif" font-size="9" fill="${col}">${t}</text>`;
+  if (c === "K") return `<svg viewBox="0 0 60 84" role="img" aria-label="Clean key"><rect x="1" y="1" width="58" height="82" rx="7" fill="url(#gKey)"/>
+    <circle cx="30" cy="36" r="22" fill="url(#gGlowK)"/>
+    <circle cx="30" cy="26" r="8" fill="none" stroke="#5CF2B0" stroke-width="4"/><circle cx="30" cy="26" r="8" fill="none" stroke="#E6FFF6" stroke-width="1.2"/>
+    <rect x="28" y="33" width="4" height="25" rx="1.5" fill="#5CF2B0"/><rect x="32" y="49" width="7" height="3.5" rx="1" fill="#5CF2B0"/><rect x="32" y="54.5" width="5" height="3.5" rx="1" fill="#5CF2B0"/>
+    ${SPARK(14, 16, 4, "#E6FFF6")}${SPARK(47, 22, 3, "#fff")}${SPARK(46, 56, 3.5, "#E6FFF6")}${lab("KEY", "#9BFFE0")}${FRAME}</svg>`;
+  if (c === "V") return `<svg viewBox="0 0 60 84" role="img" aria-label="Rogue core"><rect x="1" y="1" width="58" height="82" rx="7" fill="url(#gCore)"/>
+    <circle cx="30" cy="36" r="25" fill="url(#gGlowV)"/>
+    <path d="M30 12 L33 22 L42 15 L39 25 L50 24 L42 31 L52 36 L42 41 L50 48 L39 47 L42 57 L33 50 L30 60 L27 50 L18 57 L21 47 L10 48 L18 41 L8 36 L18 31 L10 24 L21 25 L18 15 L27 22Z" fill="#FF3D6E" opacity=".75"/>
+    <circle cx="30" cy="36" r="12" fill="url(#gOrb)"/><ellipse cx="30" cy="36" rx="8" ry="5" fill="#FFE37A"/><ellipse cx="30" cy="36" rx="1.7" ry="5" fill="#1A0008"/>
+    <circle cx="26" cy="31" r="2" fill="#fff" opacity=".8"/>${lab("CORE", "#FFB3C6")}${FRAME}</svg>`;
+  return `<svg viewBox="0 0 60 84" role="img" aria-label="Dead cable"><rect x="1" y="1" width="58" height="82" rx="7" fill="url(#gDead)"/>
+    <path d="M30 50 Q22 58 30 62 Q38 66 30 72" stroke="#6E7A96" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <rect x="20" y="24" width="20" height="26" rx="5" fill="#A7B2CC"/><rect x="24" y="16" width="3.5" height="9" rx="1" fill="#C9D1E3"/><rect x="32.5" y="16" width="3.5" height="9" rx="1" fill="#C9D1E3"/>
+    <path d="M24 35 l4 2 M28 35 l-4 2 M32 35 l4 2 M36 35 l-4 2" stroke="#2E3448" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M26 43 Q30 40 34 43" stroke="#2E3448" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <text x="44" y="22" font-family="Dela Gothic One, sans-serif" font-size="8" fill="#C9D1E3" opacity=".8">z</text><text x="48" y="15" font-family="Dela Gothic One, sans-serif" font-size="6" fill="#C9D1E3" opacity=".6">z</text>
+    ${lab("DEAD", "#C9D1E3")}${FRAME}</svg>`;
+}
+function burst(c) {
+  const col = c === "K" ? "#5CF2B0" : c === "V" ? "#FF3D6E" : "#FFD166", word = c === "K" ? "KEY GET!" : c === "V" ? "BOOM!!" : "SNIP!";
+  let spikes = ""; for (let k = 0; k < 20; k++) { const a = k / 20 * Math.PI * 2, r = k % 2 ? 70 : 100; spikes += `${(150 + Math.cos(a) * r * 1.35).toFixed(1)},${(100 + Math.sin(a) * r * .8).toFixed(1)} `; }
+  return `<div class="burst"><svg viewBox="0 0 300 200"><polygon points="${spikes}" fill="#fff" stroke="#120C26" stroke-width="5"/>
+    <polygon points="${spikes}" fill="${col}" opacity=".25"/>
+    <text x="150" y="116" text-anchor="middle" font-family="Dela Gothic One, Arial Black, sans-serif" font-size="${word.length > 6 ? 40 : 48}" fill="${col}" stroke="#120C26" stroke-width="6" paint-order="stroke">${word}</text></svg></div>`;
+}
+let fxTimer = null;
+function playFx(c) {
+  const el = document.getElementById("fx"); if (!el) return;
+  el.innerHTML = burst(c); el.classList.remove("show"); void el.offsetWidth; el.classList.add("show");
+  if (c === "V") { document.body.classList.remove("shake"); void document.body.offsetWidth; document.body.classList.add("shake"); }
+  clearTimeout(fxTimer); fxTimer = setTimeout(() => { el.classList.remove("show"); el.innerHTML = ""; }, 1000);
+}
+function rulesHTML() {
+  return `
+  <div class="teams">
+    <div>${portrait("G")}<span><b>Sysadmins</b> (most players) want to find every clean key.</span></div>
+    <div>${portrait("R")}<span><b>Rogue AIs</b> (1 to 3 players) want the core cut, or time to run out.</span></div>
+  </div>
+  <div class="deck">
+    <div>${cardFace("K")}<b>Clean key</b><br>One per player. Find them all.</div>
+    <div>${cardFace("D")}<b>Dead cable</b><br>Harmless. Most cables are these.</div>
+    <div>${cardFace("V")}<b>Rogue core</b><br>Only one. Cut it and the Rogue AIs win.</div>
+  </div>
+  <ol>
+    <li><b>Secret teams.</b> Each phone secretly shows your team. Press and hold your card to peek, and keep it hidden.</li>
+    <li><b>Deal.</b> Everyone gets 4 face-down cables. You see how many keys you hold (and if you hold the core), but not which card is which.</li>
+    <li><b>Talk.</b> Say what you hold, or post a claim with the buttons. Sysadmins usually tell the truth. Rogue AIs may lie.</li>
+    <li><b>Cut.</b> The player with the cutter taps one face-down cable of another player. It flips for everyone. The player who was cut takes the cutter.</li>
+    <li><b>Rounds.</b> A round ends after one cut per player. The uncut cables are shuffled and dealt again: 4, then 3, then 2 cables each.</li>
+    <li><b>Win.</b> Sysadmins win when all clean keys are found. Rogue AIs win the moment the core is cut, or when 3 rounds end first.</li>
+  </ol>
+  <p class="muted" style="margin-top:10px;font-size:.85rem">Playing alone or with 2? Computer players fill the empty seats.</p>`;
+}
+{ const rb = document.getElementById && document.getElementById("rules-body"); if (rb) rb.innerHTML = rulesHTML(); }
+
 // ---------- rendering ----------
 let toastMsg = "", toastTimer = null;
 function toast(m) { toastMsg = m; clearTimeout(toastTimer); toastTimer = setTimeout(() => { toastMsg = ""; render(); }, 3500); render(); }
 const nameOf = (st, pid) => { const r = (st.pl || []).find(p => p[0] === pid); return r ? r[1] : "Someone"; };
+const isBotPid = pid => /^bot/.test(pid);
 const pageLink = () => location.href.split("#")[0].split("?")[0];
 
 function viewHome() {
@@ -352,7 +549,8 @@ function viewHome() {
   const linked = (location.hash.match(/^#([A-Za-z]{4})$/) || [])[1];
   return `
   <section class="card">
-    <p>A secret-team party game for 1–8 people, each on their own phone. Somewhere in the server rack is a <b>rogue core</b>. Find all the clean keys before someone cuts it.</p>
+    <div class="row" style="flex-wrap:nowrap;gap:12px">${cardBack().replace("<svg", '<svg class="mini" style="width:46px"')}
+      <p>A secret-team party game for 1–8 people, each on their own phone. Somewhere in the rack is a <b style="color:var(--core)">rogue core</b>. Find every clean key before someone cuts it.</p></div>
     ${typeof Peer === "undefined" ? `<p class="notice">The connection library didn't load. Check your internet and reload.</p>` : ""}
     <label class="label" for="name-in">Your name</label>
     <input id="name-in" maxlength="14" autocomplete="nickname" placeholder="e.g. Ameen" value="${esc(me.name)}">
@@ -370,13 +568,13 @@ function viewLobby() {
   <section class="card" style="text-align:center">
     <span class="label">Game code</span>
     <div class="bigcode">${esc(code)}</div>
-    <p class="muted">Friends open this site on their phones and join with this code, or use the link:</p>
+    <p class="muted">Friends open this site and join with the code, or use the link:</p>
     <div class="share"><code id="link">${esc(link)}</code><button id="copy">Copy link</button></div>
   </section>
   ${hint ? `<p class="notice">${esc(hint)}</p>` : ""}
   <section class="card">
     <div class="row" style="justify-content:space-between"><h2>Players</h2><span class="chip">${on} / 8</span></div>
-    <ul class="players">${ps.map(p => `<li class="${p.on ? "" : "off"}"><span>${esc(p.name)}</span><span class="row">${p.host ? '<span class="chip amber">host</span>' : ""}${p.bot ? '<span class="chip">computer</span>' : ""}${p.pid === me.pid ? '<span class="chip">you</span>' : ""}${p.on ? "" : '<span class="chip">away</span>'}${isHost && p.bot ? `<button class="chip" data-unbot="${esc(p.pid)}" aria-label="Remove ${esc(p.name)}">remove</button>` : ""}</span></li>`).join("") || '<li class="muted">Connecting to the game…</li>'}</ul>
+    <ul class="players">${ps.map(p => `<li class="${p.on ? "" : "off"}"><span class="who-line">${avatar(p.pid, p.bot)}<span>${esc(p.name)}</span></span><span class="row">${p.host ? '<span class="chip gold">host</span>' : ""}${p.bot ? '<span class="chip">computer</span>' : ""}${p.pid === me.pid ? '<span class="chip">you</span>' : ""}${p.on ? "" : '<span class="chip">away</span>'}${isHost && p.bot ? `<button class="chip" data-unbot="${esc(p.pid)}" aria-label="Remove ${esc(p.name)}">remove</button>` : ""}</span></li>`).join("") || '<li class="muted">Connecting to the game…</li>'}</ul>
     ${isHost && on < 8 ? `<button id="addbot">+ Add computer player</button>` : ""}
     ${isHost ? `<button class="primary" id="start" ${ok ? "" : "disabled"}>${ok ? startLabel : "Up to 8 players"}</button>
       <p class="muted" style="font-size:.85rem">Keep this page open: your phone runs the game for everyone.</p>`
@@ -393,30 +591,34 @@ function viewPlay(st) {
   let secretPanel;
   if (inGame) {
     const s = view.secret, team = s ? (s.r === "R" ? "rogue" : "sys") : "", my = claims[me.pid] || {};
+    const handCards = s ? [...Array(s.k).fill("K"), ...(s.v ? ["V"] : []), ...Array(s.d).fill("D")] : [];
     secretPanel = `
     <section class="card">
-      <div class="row" style="justify-content:space-between"><span class="label">Your secret</span><span class="label">Round ${st.rd} of 3</span></div>
-      <div class="peek ${peekOpen && s ? "open " + team : ""}" id="peek" role="button" tabindex="0" aria-label="Press and hold to see your team and cables">
-        ${peekOpen && s ? `<div><div class="role ${team}">${s.r === "R" ? "ROGUE AI" : "SYSADMIN"}</div>
-          <p style="margin-top:6px">You hold <b style="color:var(--key)">${s.k} key${s.k === 1 ? "" : "s"}</b> · ${s.d} dead${s.v ? ` · <b style="color:var(--core)">the rogue core</b>` : ""}</p></div>`
-        : `<div><b>Press and hold to peek</b><p class="muted" style="font-size:.85rem">Cover your screen.</p></div>`}
+      <div class="row" style="justify-content:space-between"><span class="label">Your secret card</span><span class="label">Round ${st.rd} of 3</span></div>
+      <div class="peek ${peekOpen && s ? "open" : ""}" id="peek" role="button" tabindex="0" aria-label="Press and hold to see your team and cables">
+        ${peekOpen && s ? `<div class="rolecard ${team}">${portrait(s.r)}<div><div class="rn">${s.r === "R" ? "Rogue AI" : "Sysadmin"}</div>
+          <p class="muted" style="font-size:.85rem">${s.r === "R" ? "Get the core cut, or stall until time runs out." : "Find every clean key."}</p>
+          <div class="label" style="margin-top:10px">Your cables this round</div>
+          <div class="hand">${handCards.map(c => `<span class="mini">${cardFace(c)}</span>`).join("")}</div>
+          <p style="font-size:.85rem;margin-top:4px">${s.k} key${s.k === 1 ? "" : "s"} · ${s.d} dead${s.v ? ' · <b style="color:var(--core)">the core!</b>' : ""}</p></div></div>`
+        : `<div><b style="font-family:var(--display);font-weight:400;font-size:1.1rem">Press and hold to peek</b><p class="muted" style="font-size:.85rem">Cover your screen first.</p></div>`}
       </div>
       <div class="label">Post a claim (you can bluff)</div>
       <div class="claims">${Array.from({ length: roundSize + 1 }, (_, k) => `<button data-claim="${k}" aria-pressed="${my.k === k}">${k} key${k === 1 ? "" : "s"}</button>`).join("")}
         <button data-core="1" aria-pressed="${!!my.v}">I have the core</button></div>
     </section>`;
   } else secretPanel = `<p class="notice">This game started without you. You're watching.</p>`;
-  const turn = myTurn ? `<div class="turn mine">You hold the cutter. Tap someone else's cable to cut it.</div>`
-    : `<div class="turn"><b>${esc(nameOf(st, st.tp))}</b> holds the cutter.</div>`;
+  const turn = myTurn ? `<div class="turn mine">✂ You hold the cutter! Tap someone else's cable.</div>`
+    : `<div class="turn">${avatar(st.tp, isBotPid(st.tp))}<span><b>${esc(nameOf(st, st.tp))}</b> holds the cutter…</span></div>`;
   const seats = (st.pl || []).map(([pid, name, cards]) => {
     const cl = claims[pid];
     return `<div class="seat ${pid === st.tp ? "cutter" : ""} ${pid === me.pid ? "me" : ""} ${away.has(pid) ? "off" : ""}">
-      <div class="who"><span class="nm">${esc(name)}${pid === me.pid ? " (you)" : ""}</span>${pid === st.tp ? '<span class="chip amber">cutter</span>' : away.has(pid) ? '<span class="chip">away</span>' : ""}</div>
-      ${cl ? `<div class="row"><span class="chip key">says ${cl.k} key${cl.k === 1 ? "" : "s"}</span>${cl.v ? '<span class="chip core">says core</span>' : ""}</div>` : ""}
+      <div class="who"><span class="who-line" style="gap:8px">${avatar(pid, isBotPid(pid))}<span class="nm">${esc(name)}${pid === me.pid ? " (you)" : ""}</span></span>${pid === st.tp ? '<span class="chip gold">✂</span>' : away.has(pid) ? '<span class="chip">away</span>' : ""}</div>
+      ${cl ? `<div class="row" style="gap:4px"><span class="chip key">says ${cl.k} key${cl.k === 1 ? "" : "s"}</span>${cl.v ? '<span class="chip core">says core</span>' : ""}</div>` : ""}
       <div class="cables">${[...cards].map((c, i) => {
-        if (c !== ".") return `<span class="cable ${c} ${freshCable === pid + ":" + i ? "fresh" : ""}">${NAMES[c]}</span>`;
+        if (c !== ".") return `<span class="cc ${freshCable === pid + ":" + i ? "fresh" : ""}">${cardFace(c)}</span>`;
         const can = myTurn && pid !== me.pid, pend = pending && pending.t === pid && pending.i === i;
-        return `<button class="cable ${can ? "can" : ""} ${pend ? "pending" : ""}" data-t="${esc(pid)}" data-i="${i}" ${can ? "" : "disabled"} aria-label="${esc(name)}'s cable ${i + 1}, face down"></button>`;
+        return `<button class="cc ${can ? "can" : ""} ${pend ? "pending" : ""}" data-t="${esc(pid)}" data-i="${i}" ${can ? "" : "disabled"} aria-label="${esc(name)}'s cable ${i + 1}, face down">${cardBack()}</button>`;
       }).join("")}</div>
     </div>`;
   }).join("");
@@ -438,12 +640,13 @@ function viewEnd(st) {
   return `
   <section class="card win ${sys ? "sys" : "rogue"}">
     <span class="label">Game over</span>
-    <h2>${sys ? "SYSADMINS WIN" : "ROGUE AI WINS"}</h2>
+    ${portrait(sys ? "G" : "R", "port")}
+    <h2>${sys ? "SYSADMINS WIN!" : "ROGUE AI WINS!"}</h2>
     <p class="muted">${why}</p>
   </section>
   <section class="card">
     <h2>Who was who</h2>
-    <ul class="players">${(st.pl || []).map(([pid, name], k) => { const r = (st.ro || "")[k]; return `<li><span>${esc(name)}${pid === me.pid ? " (you)" : ""}</span><span class="chip ${r === "R" ? "core" : "key"}">${r === "R" ? "Rogue AI" : "Sysadmin"}</span></li>`; }).join("")}</ul>
+    <ul class="players">${(st.pl || []).map(([pid, name], k) => { const r = (st.ro || "")[k]; return `<li><span class="who-line">${avatar(pid, isBotPid(pid))}<span>${esc(name)}${pid === me.pid ? " (you)" : ""}</span></span><span class="chip ${r === "R" ? "core" : "key"}">${r === "R" ? "Rogue AI" : "Sysadmin"}</span></li>`; }).join("")}</ul>
     ${isHost ? `<button class="primary" id="again">Play again</button><button id="lobby">Back to lobby</button>` : `<p class="muted">The host can start the next game.</p>`}
     <button id="leave">Leave</button>
   </section>`;
@@ -458,7 +661,10 @@ function render() {
     const st = view && view.st;
     if (!st || st.ph === "lobby") html = viewLobby();
     else {
-      if (st.last && st.last.n !== lastEventN) { lastEventN = st.last.n; freshCable = st.last.t + ":" + st.last.i; pending = null; }
+      if (st.last && st.last.n !== lastEventN) {
+        const first = lastEventN === -1; lastEventN = st.last.n; freshCable = st.last.t + ":" + st.last.i; pending = null;
+        if (!first) playFx(st.last.c);
+      }
       html = st.ph === "end" ? viewEnd(st) : viewPlay(st);
     }
   }
