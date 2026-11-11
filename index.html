@@ -797,55 +797,76 @@ function seededRnd(s) { s = (s % 2147483646) + 1; return () => (s = (s * 16807) 
 const TABLE_TOP = { dr: "url(#gTblDr)", montreal: "url(#gTblMtl)", desert: "url(#gTblDes)", beach: "url(#gTblBea)" };
 const TABLE_RIM = { dr: "#155E58", montreal: "#4A2C1A", desert: "#7A5216", beach: "#8A6236" };
 
-// Everyone around one table. You sit at the bottom (seen from behind); your cards lie in front of you.
+// Everyone around one table, seen close up. You sit at the bottom centre (from behind); players across the
+// table are large, with their arms on it; players beside you are seen from behind, cropped by the frame.
+// Seat slots: anchor point, scale, which way they face, and where their cards lie on the table.
+const SLOTS = {
+  farL: { x: 85, y: 236, s: .8, v: "front", cx: 85, cy: 284 }, farC: { x: 200, y: 230, s: .84, v: "front", cx: 200, cy: 282 },
+  farR: { x: 315, y: 236, s: .8, v: "front", cx: 315, cy: 284 },
+  farL2: { x: 130, y: 232, s: .86, v: "front", cx: 130, cy: 283 }, farR2: { x: 270, y: 232, s: .86, v: "front", cx: 270, cy: 283 },
+  sideL: { x: 30, y: 286, s: .9, v: "front", cx: 96, cy: 334 }, sideR: { x: 370, y: 286, s: .9, v: "front", cx: 304, cy: 334 },
+  nearL: { x: 58, y: 468, s: 1.12, v: "back", cx: 104, cy: 384 }, nearR: { x: 342, y: 468, s: 1.12, v: "back", cx: 296, cy: 384 },
+  me: { x: 200, y: 478, s: 1.24, v: "back", cx: 200, cy: 386 },
+};
+const SEATING = {
+  0: [], 1: ["farC"], 2: ["farL2", "farR2"], 3: ["farL", "farC", "farR"], 4: ["sideL", "farL2", "farR2", "sideR"],
+  5: ["sideL", "farL", "farC", "farR", "sideR"], 6: ["nearL", "sideL", "farL2", "farR2", "sideR", "nearR"],
+  7: ["nearL", "sideL", "farL", "farC", "farR", "sideR", "nearR"],
+};
+function arms(o, x, y, s) {
+  const skin = o.skin, sl = mix(o.shirt, "#000000", .12);
+  const one = f => `<path d="M${x + f * 44 * s} ${y - 16 * s} Q${x + f * 52 * s} ${y + 8 * s} ${x + f * 22 * s} ${y + 22 * s} L${x + f * 10 * s} ${y + 14 * s} Q${x + f * 30 * s} ${y + 2 * s} ${x + f * 28 * s} ${y - 16 * s}Z" fill="${sl}"/>
+    <ellipse cx="${x + f * 14 * s}" cy="${y + 20 * s}" rx="${9 * s}" ry="${6.5 * s}" fill="${skin}"/>`;
+  return one(-1) + one(1);
+}
 function tableScene(seats, st, myTurn) {
-  const n = seats.length, C = { x: 200, y: 200 }, RX = 158, RY = 96;
-  const meIdx = Math.max(0, seats.findIndex(s => s.pid === me.pid));
-  const layout = seats.map((s, j) => {
-    const a = Math.PI / 2 + ((j - meIdx + n) % n) / n * Math.PI * 2, sin = Math.sin(a), cos = Math.cos(a), depth = (sin + 1) / 2;
-    return { ...s, a, sin, cos, depth, x: C.x + cos * RX, y: C.y + sin * RY };
-  });
-  const front = layout.filter(p => p.sin < .3).sort((a, b) => a.y - b.y), back = layout.filter(p => p.sin >= .3).sort((a, b) => a.y - b.y);
-  const drawFront = p => { const s = .4 + .26 * p.depth, o = lookOpts(lookOf(p.pid));
-    return `<g transform="translate(${(p.x - 100 * s).toFixed(1)} ${(p.y - 182 * s).toFixed(1)}) scale(${s.toFixed(3)})">
-      <rect x="40" y="96" width="120" height="150" rx="26" fill="${mix(TABLE_RIM[settings.bg], "#000000", .2)}"/>${character(o)}</g>`; };
-  const drawBack = p => { const s = .5 + .14 * p.depth, hy = 262 + 34 * s + (p.sin - .3) * 8;
-    return `<g transform="translate(${(p.x - 100 * s).toFixed(1)} ${(hy - 100 * s).toFixed(1)}) scale(${s.toFixed(3)})">${backView(lookOpts(lookOf(p.pid)))}</g>`; };
+  const n = seats.length, meIdx = Math.max(0, seats.findIndex(s => s.pid === me.pid));
+  const others = [...seats.slice(meIdx + 1), ...seats.slice(0, meIdx)];
+  const names = SEATING[Math.min(7, others.length)];
+  const layout = [{ ...seats[meIdx], slot: SLOTS.me }, ...others.slice(0, 7).map((p, i) => ({ ...p, slot: SLOTS[names[i]] }))].filter(p => p.pid);
+  const fronts = layout.filter(p => p.slot.v === "front").sort((a, b) => a.slot.y - b.slot.y);
+  const backs = layout.filter(p => p.slot.v === "back").sort((a, b) => a.slot.s - b.slot.s);
+  const drawFront = p => { const { x, y, s } = p.slot, o = lookOpts(lookOf(p.pid));
+    return `<g transform="translate(${(x - 100 * s).toFixed(1)} ${(y - 182 * s).toFixed(1)}) scale(${s})">
+      <rect x="34" y="92" width="132" height="160" rx="30" fill="${mix(TABLE_RIM[settings.bg], "#000000", .25)}"/>${character(o)}</g>`; };
+  const drawBack = p => { const { x, y, s } = p.slot;
+    return `<g transform="translate(${(x - 100 * s).toFixed(1)} ${(y - 100 * s).toFixed(1)}) scale(${s})">${backView(lookOpts(lookOf(p.pid)))}</g>`; };
   let cards = "";
   if (st) for (const p of layout) {
     const row = p.cards || ""; if (!row.length) continue;
-    const k = p.sin >= .3 ? .4 : .56, cx = C.x + p.cos * RX * k, cy = C.y + p.sin * RY * k;
-    const cw = (13 + 8 * p.depth) * (n >= 7 ? .82 : 1), ch = cw * 1.4 * .62, gap = 2.5, total = row.length * cw + (row.length - 1) * gap;
+    const big = p.slot.v === "back" ? 1 : p.slot.s / .84 * .82;
+    const cw = 30 * big * (p.slot === SLOTS.nearL || p.slot === SLOTS.nearR || p.slot === SLOTS.sideL || p.slot === SLOTS.sideR ? .8 : 1);
+    const ch = cw * 1.4 * .66, gap = 3, total = row.length * cw + (row.length - 1) * gap, cx = p.slot.cx, cy = p.slot.cy;
     [...row].forEach((c, i) => {
       const x = cx - total / 2 + i * (cw + gap), y = cy - ch / 2;
-      const inner = c === "." ? BACK_INNER : faceInner(c);
       const can = c === "." && myTurn && p.pid !== me.pid, fresh = freshCable === p.pid + ":" + i, pend = pending && pending.t === p.pid && pending.i === i;
       const attrs = c === "." ? `data-t="${esc(p.pid)}" data-i="${i}" ${can ? `tabindex="0" role="button" aria-label="Cut ${esc(p.name)}'s cable ${i + 1}"` : ""}` : "";
       cards += `<g class="tcard ${can ? "can" : ""} ${fresh ? "fresh" : ""} ${pend ? "pending" : ""}" ${attrs}>
-        <rect x="${(x + 1.5).toFixed(1)}" y="${(y + 2).toFixed(1)}" width="${cw.toFixed(1)}" height="${ch.toFixed(1)}" rx="2" fill="#000" opacity=".3"/>
-        <svg x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${cw.toFixed(1)}" height="${ch.toFixed(1)}" viewBox="0 0 60 84" preserveAspectRatio="none">${inner}</svg></g>`;
+        <rect x="${(x + 2).toFixed(1)}" y="${(y + 3).toFixed(1)}" width="${cw.toFixed(1)}" height="${ch.toFixed(1)}" rx="3" fill="#000" opacity=".3"/>
+        <svg x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${cw.toFixed(1)}" height="${ch.toFixed(1)}" viewBox="0 0 60 84" preserveAspectRatio="none">${c === "." ? BACK_INNER : faceInner(c)}</svg></g>`;
     });
-    if (p.pid === st.tp) cards += `<text x="${(cx + total / 2 + 9).toFixed(1)}" y="${(cy + 5).toFixed(1)}" font-size="${(12 + 6 * p.depth).toFixed(0)}" class="scis">✂</text>`;
+    if (st && p.pid === st.tp) cards += `<text x="${(cx + total / 2 + 12).toFixed(1)}" y="${(cy + 7).toFixed(1)}" font-size="20" class="scis">✂</text>`;
   }
   const tags = layout.map(p => {
-    const isBack = p.sin >= .3, ty = isBack ? 330 : p.y + 4, cl = p.claim;
-    const label = esc(p.name) + (p.pid === me.pid ? " (you)" : ""), w = Math.max(54, label.length * 6.2 + 16);
-    const claim = cl ? `<text x="${p.x.toFixed(1)}" y="${(ty + 19).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="800" fill="${cl.v ? "#FF8AA8" : "#9BFFE0"}" stroke="#120C26" stroke-width="3" paint-order="stroke">says ${cl.k} key${cl.k === 1 ? "" : "s"}${cl.v ? " + core" : ""}</text>` : "";
-    const cut = st && p.pid === st.tp;
-    return `<g><rect x="${(p.x - w / 2).toFixed(1)}" y="${(ty - 9).toFixed(1)}" width="${w.toFixed(1)}" height="16" rx="8" fill="${cut ? "#FFD166" : "rgba(18,12,38,.82)"}" stroke="${p.bot ? "#B9ADDB" : "#FF5FA2"}" stroke-width="1.2"/>
-      <text x="${p.x.toFixed(1)}" y="${(ty + 3).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="800" fill="${cut ? "#3A2200" : "#F7F2FF"}">${cut ? "✂ " : ""}${label}</text>${claim}</g>`;
+    const back = p.slot.v === "back", tx = Math.min(360, Math.max(40, p.slot.x)), ty = back ? 506 : p.slot.y + 10, cl = p.claim;
+    const label = esc(p.name) + (p.pid === me.pid ? " (you)" : ""), w = Math.max(60, label.length * 7 + 18), cut = st && p.pid === st.tp;
+    const claim = cl ? `<text x="${tx}" y="${ty - 14}" text-anchor="middle" font-size="10.5" font-weight="800" fill="${cl.v ? "#FF8AA8" : "#9BFFE0"}" stroke="#120C26" stroke-width="3.5" paint-order="stroke">says ${cl.k} key${cl.k === 1 ? "" : "s"}${cl.v ? " + core" : ""}</text>` : "";
+    return `<g><rect x="${(tx - w / 2).toFixed(1)}" y="${ty - 10}" width="${w.toFixed(1)}" height="19" rx="9.5" fill="${cut ? "#FFD166" : "rgba(18,12,38,.85)"}" stroke="${p.bot ? "#B9ADDB" : "#FF5FA2"}" stroke-width="1.4"/>
+      <text x="${tx}" y="${ty + 4}" text-anchor="middle" font-size="11" font-weight="800" fill="${cut ? "#3A2200" : "#F7F2FF"}">${cut ? "✂ " : ""}${label}</text>${claim}</g>`;
   }).join("");
-  const center = st ? `<g><rect x="160" y="190" width="80" height="20" rx="10" fill="rgba(0,0,0,.35)"/><text x="200" y="204" text-anchor="middle" font-size="9.5" font-weight="800" fill="#FFE7A3">ROUND ${st.rd} · ${st.kf}/${st.need} KEYS</text></g>` : "";
-  const dominoes = settings.bg === "dr" ? `<g opacity=".9"><rect x="128" y="176" width="16" height="8" rx="1.5" fill="#FFF6E6" transform="rotate(-18 136 180)"/><rect x="252" y="214" width="16" height="8" rx="1.5" fill="#FFF6E6" transform="rotate(24 260 218)"/></g>` : "";
-  return `<svg class="scene" viewBox="0 0 400 340" role="group" aria-label="Table with ${n} players">
-    ${sceneBg(settings.bg)}
-    ${front.map(drawFront).join("")}
-    <ellipse cx="200" cy="216" rx="164" ry="70" fill="#000" opacity=".35"/>
-    <ellipse cx="200" cy="206" rx="156" ry="64" fill="${TABLE_RIM[settings.bg]}"/>
-    <ellipse cx="200" cy="200" rx="150" ry="60" fill="${TABLE_TOP[settings.bg]}"/>
-    <ellipse cx="200" cy="200" rx="132" ry="50" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="1.5"/>
+  const center = st ? `<g><rect x="150" y="326" width="100" height="22" rx="11" fill="rgba(0,0,0,.35)"/><text x="200" y="341" text-anchor="middle" font-size="10.5" font-weight="800" fill="#FFE7A3">ROUND ${st.rd} · ${st.kf}/${st.need} KEYS</text></g>` : "";
+  const dominoes = settings.bg === "dr" ? `<g opacity=".9"><rect x="120" y="350" width="22" height="11" rx="2" fill="#FFF6E6" transform="rotate(-18 131 355)"/><circle cx="126" cy="355" r="1.5" fill="#222" transform="rotate(-18 131 355)"/><rect x="262" y="318" width="22" height="11" rx="2" fill="#FFF6E6" transform="rotate(24 273 323)"/></g>` : "";
+  return `<svg class="scene" viewBox="0 0 400 520" role="group" aria-label="Table with ${n} players">
+    <rect width="400" height="520" fill="${mix(TABLE_RIM[settings.bg], "#000000", .45)}"/>
+    <g transform="translate(-120 -40) scale(1.6)">${sceneBg(settings.bg)}</g>
+    ${fronts.map(drawFront).join("")}
+    <ellipse cx="200" cy="346" rx="250" ry="112" fill="#000" opacity=".3"/>
+    <ellipse cx="200" cy="336" rx="242" ry="106" fill="${TABLE_RIM[settings.bg]}"/>
+    <ellipse cx="200" cy="328" rx="234" ry="98" fill="${TABLE_TOP[settings.bg]}"/>
+    <ellipse cx="200" cy="328" rx="206" ry="82" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="2"/>
+    ${fronts.map(p => arms(lookOpts(lookOf(p.pid)), p.slot.x, p.slot.y, p.slot.s)).join("")}
     ${dominoes}${center}${cards}
-    ${back.map(drawBack).join("")}
+    ${backs.map(drawBack).join("")}
     ${tags}
   </svg>`;
 }
