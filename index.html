@@ -628,7 +628,7 @@ function playFx(c) {
 }
 
 // Features released step by step.
-const FEATURES = { settings: false, music: false };
+const FEATURES = { settings: true, music: false };
 // ---------- settings ----------
 const BGS = { dr: "Dominican Republic", montreal: "Montreal", desert: "Desert", beach: "Beach" };
 const TRACKS = { match: "Match the place", bachata: "Bachata del Mar", lofi: "Montreal lo-fi", desert: "Desert caravan", beach: "Steel-drum beach", off: "Off" };
@@ -914,10 +914,10 @@ function settingsHTML() {
       <div class="label">Outfit</div><div class="opts">${OUTFIT.map((c, i) => swatch("o", i, c, l.o === i, "Outfit color " + (i + 1))).join("")}</div>
       <div class="opts">${opt("g", 0, "No glasses", l.g === 0)}${opt("g", 1, "Glasses", l.g === 1)}</div>
     </section>
-    <section class="sgroup"><span class="label">Place</span><div class="opts">${Object.entries(BGS).map(([k, v]) => opt("bg", k, v, settings.bg === k)).join("")}</div></section>
+    ${FEATURES.music ? `<section class="sgroup"><span class="label">Place</span><div class="opts">${Object.entries(BGS).map(([k, v]) => opt("bg", k, v, settings.bg === k)).join("")}</div></section>
     <section class="sgroup"><span class="label">Music</span><div class="opts">${Object.entries(TRACKS).map(([k, v]) => opt("music", k, v, settings.music === k)).join("")}</div>
       <label class="label" for="vol">Volume</label><input id="vol" type="range" min="0" max="1" step="0.05" value="${settings.vol}">
-      <p class="muted" style="font-size:.8rem">All music is original and made live in your browser.</p></section>
+      <p class="muted" style="font-size:.8rem">All music is original and made live in your browser.</p></section>` : ""}
     <section class="sgroup"><span class="label">Game view</span><div class="opts">${opt("view", "table", "Table", settings.view === "table")}${opt("view", "list", "List", settings.view === "list")}</div></section>
   </div>`;
 }
@@ -960,7 +960,7 @@ function viewHome() {
     <div class="label">or join with a code</div>
     <div class="split"><input id="code-in" maxlength="4" autocapitalize="characters" autocomplete="off" placeholder="ABCD" value="${esc(linked ? linked.toUpperCase() : "")}"><button id="join">Join</button></div>
     ${cur ? `<button id="rejoin">Rejoin game ${esc(cur.code)}</button>` : ""}
-    ${FEATURES.settings ? '<button id="open-set2">⚙ Change my character, place and music</button>' : ""}
+    ${FEATURES.settings ? '<button id="open-set2">⚙ Design my character</button>' : ""}
   </section>`;
 }
 function viewLobby() {
