@@ -977,7 +977,7 @@ function viewLobby() {
   </section>
   ${hint ? `<p class="notice">${esc(hint)}</p>` : ""}
   <section class="card">
-    <div class="row" style="justify-content:space-between"><h2>Players</h2><span class="chip">${on} / 8</span></div>
+    <div class="row" style="justify-content:space-between"><h2>Players</h2><span class="row" style="gap:6px">${FEATURES.settings ? '<button class="opt set-btn">⚙ Settings</button>' : ""}<span class="chip">${on} / 8</span></span></div>
     <ul class="players">${ps.map(p => `<li class="${p.on ? "" : "off"}"><span class="who-line">${avatar(p.pid)}<span>${esc(p.name)}</span></span><span class="row">${p.host ? '<span class="chip gold">host</span>' : ""}${p.bot ? '<span class="chip">computer</span>' : ""}${p.pid === me.pid ? '<span class="chip">you</span>' : ""}${p.on ? "" : '<span class="chip">away</span>'}${isHost && p.bot ? `<button class="chip" data-unbot="${esc(p.pid)}" aria-label="Remove ${esc(p.name)}">remove</button>` : ""}</span></li>`).join("") || '<li class="muted">Connecting to the game…</li>'}</ul>
     ${isHost && on < 8 ? `<button id="addbot">+ Add computer player</button>` : ""}
     ${isHost ? `<button class="primary" id="start" ${ok ? "" : "disabled"}>${ok ? startLabel : "Up to 8 players"}</button>
@@ -1036,7 +1036,7 @@ function viewPlay(st) {
   return `
   ${turn}
   ${ev}
-  <div class="row" style="justify-content:space-between"><span class="label">${esc(BGS[settings.bg])}</span>${viewToggle()}</div>
+  <div class="row" style="justify-content:space-between">${FEATURES.settings ? '<button class="opt set-btn">⚙ Settings</button>' : `<span class="label">${esc(BGS[settings.bg])}</span>`}${viewToggle()}</div>
   ${board}
   <section class="status">
     <div class="stat"><span class="label">Keys found</span><b>${st.kf} / ${st.need}</b><div class="keys">${Array.from({ length: st.need }, (_, k) => `<i class="${k < st.kf ? "on" : ""}"></i>`).join("")}</div></div>
@@ -1089,7 +1089,7 @@ function render() {
 // Settings and table-card taps.
 document.addEventListener("click", e => {
   const s = e.target.closest("[data-set]"); if (s) { const [k, v] = s.dataset.set.split(":"); applySetting(k, v); return; }
-  if (e.target.closest("#gear") || e.target.closest("#open-set2")) { settingsOpen = true; renderSettings(); return; }
+  if (e.target.closest("#gear") || e.target.closest("#open-set2") || e.target.closest(".set-btn")) { settingsOpen = true; renderSettings(); return; }
   if (e.target.closest("#close-set") || e.target.id === "settings") { settingsOpen = false; renderSettings(); return; }
   if (e.target.closest("#rand-look")) { me.look = randomLook(); LS.set("rc-look", me.look); if (code) send({ type: "look", look: me.look }); renderSettings(); render(); return; }
   if (e.target.closest("#mute")) { if (settings.music === "off") settings.music = settings.lastMusic || "match"; else { settings.lastMusic = settings.music; settings.music = "off"; } saveSettings(); applyMusic(); renderSettings(); return; }
